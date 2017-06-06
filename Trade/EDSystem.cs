@@ -5,6 +5,7 @@ using System.IO;
 using Trade;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 
 namespace EliteTrader
 {
@@ -45,40 +46,96 @@ namespace EliteTrader
         public int? reserve_type_id { get; set; }
         public string reserve_type { get; set; }
 
+        private static string DataPath;
+
+        static EDSystem()
+        {
+            DataPath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "systems.csv");
+        }
+
+        public static void DownloadData()
+        {
+            Console.WriteLine("Downloading system data from EDDB...");
+
+            if (File.Exists(DataPath))
+            {
+                File.Delete(DataPath);
+            }
+
+            if (!Directory.Exists(Path.GetDirectoryName(DataPath)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(DataPath));
+            }
+
+            var systemsCsv = @"https://eddb.io/archive/v5/systems.csv";
+            using (var client = new WebClient())
+            {
+                client.DownloadFile(systemsCsv, DataPath);
+            }
+        }
+
         public static void LoadFromFile()
         {
+            if (!File.Exists(DataPath))
+            {
+                DownloadData();
+            }
+
             // https://eddb.io/archive/v5/systems.csv
             IEnumerable<EDSystem> systems;
-            using (Stream stream = File.Open(@"C:\Users\passp\Documents\Dev\EliteTrader\Data\systems.csv", FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (Stream stream = File.Open(DataPath, FileMode.Open, FileAccess.Read, FileShare.Read))
             using (StreamReader streamReader = new StreamReader(stream))
             using (CsvReader csv = new CsvReader(streamReader))
-            using (var db = new TradeContext())
             {
                 Console.Write("Importing systems");
                 var start = DateTime.Now;
 
                 systems = csv.GetRecords<EDSystem>();
-                db.Configuration.AutoDetectChangesEnabled = false;
-                db.Configuration.ValidateOnSaveEnabled = false;
-                db.Database.ExecuteSqlCommand("TRUNCATE TABLE [EDSystems]");
+
+                Truncate();
+
+                TradeContext db = null;
                 int i = 0;
                 foreach (var s in systems)
                 {
+                    if(db == null)
+                    {
+                        db = new TradeContext();
+                        db.Configuration.AutoDetectChangesEnabled = false;
+                        db.Configuration.ValidateOnSaveEnabled = false;
+                    }
+
                     i++;
                     db.Systems.Add(s);
                     if (i % 1000 == 0)
                     {
                         db.SaveChanges();
                         Console.Write(".");
+                        db.Dispose();
+                        db = null;
                     }
                 }
-                db.SaveChanges();
-                db.Configuration.AutoDetectChangesEnabled = true;
-                db.Configuration.ValidateOnSaveEnabled = true;
+
+                if(db != null)
+                {
+                    db.SaveChanges();
+                    db.Dispose();
+                }
+
                 var duration = DateTime.Now - start;
                 Console.WriteLine($"Found {i} systems in {duration.ToString()}");
             }
 
+        }
+
+        private static void Truncate()
+        {
+            using (var db = new TradeContext())
+            {
+                db.Configuration.AutoDetectChangesEnabled = false;
+                db.Configuration.ValidateOnSaveEnabled = false;
+                db.Database.ExecuteSqlCommand("TRUNCATE TABLE [EDSystems]");
+            }
         }
     }
 }

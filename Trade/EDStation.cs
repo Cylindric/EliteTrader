@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
+using System.Net;
 using Trade;
 
 namespace EliteTrader
@@ -55,11 +56,44 @@ namespace EliteTrader
         public object body_id { get; set; }
         public int? controlling_minor_faction_id { get; set; }
 
+        private static string DataPath;
+
+        static EDStation()
+        {
+            DataPath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "stations.json");
+        }
+
+        public static void DownloadData()
+        {
+            Console.WriteLine("Downloading station data from EDDB...");
+
+            if (File.Exists(DataPath))
+            {
+                File.Delete(DataPath);
+            }
+
+            if (!Directory.Exists(Path.GetDirectoryName(DataPath)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(DataPath));
+            }
+
+            var stationsCsv = @"https://eddb.io/archive/v5/stations.json";
+            using (var client = new WebClient())
+            {
+                client.DownloadFile(stationsCsv, DataPath);
+            }
+        }
+
         public static void LoadFromFile()
         {
+            if (!File.Exists(DataPath))
+            {
+                DownloadData();
+            }
+
             // https://eddb.io/archive/v5/stations.json
             IEnumerable<EDStation> stations;
-            using (Stream stream = File.Open(@"C:\Users\passp\Documents\Dev\EliteTrader\Data\stations.json", FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (Stream stream = File.Open(DataPath, FileMode.Open, FileAccess.Read, FileShare.Read))
             using (StreamReader streamReader = new StreamReader(stream))
             using (JsonTextReader reader = new JsonTextReader(streamReader))
             using (var db = new TradeContext())
