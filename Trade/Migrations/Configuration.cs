@@ -1,11 +1,13 @@
 namespace Trade.Migrations
 {
+    using System;
     using System.Data.Entity.Migrations;
 
     internal sealed class Configuration : DbMigrationsConfiguration<Trade.TradeContext>
     {
         public Configuration()
         {
+            SqlServerTypes.Utilities.LoadNativeAssemblies(AppDomain.CurrentDomain.BaseDirectory);
             AutomaticMigrationsEnabled = true;
         }
 

@@ -10,8 +10,8 @@ namespace EliteTrader
     {
         static void Main(string[] args)
         {
-            EDStation.LoadFromFile();
-            EDSystem.LoadFromFile();
+            // EDStation.LoadFromFile();
+            // EDSystem.LoadFromFile();
         }
     }
 }

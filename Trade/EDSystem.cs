@@ -6,6 +6,7 @@ using Trade;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using System.Data.Entity.Spatial;
 
 namespace EliteTrader
 {
@@ -20,9 +21,15 @@ namespace EliteTrader
         [MaxLength(100)]
         public string name { get; set; }
 
-        public float? x { get; set; }
-        public float? y { get; set; }
-        public float? z { get; set; }
+        [Index("PositionIndex", 1)]
+        public float x { get; set; }
+
+        [Index("PositionIndex", 2)]
+        public float y { get; set; }
+
+        [Index("PositionIndex", 3)]
+        public float z { get; set; }
+
         public long? population { get; set; }
         public int? is_populated { get; set; }
         public int? government_id { get; set; }
@@ -45,6 +52,8 @@ namespace EliteTrader
         public string controlling_minor_faction { get; set; }
         public int? reserve_type_id { get; set; }
         public string reserve_type { get; set; }
+
+        public DbGeometry location { get; set; }
 
         private static string DataPath;
 
@@ -106,6 +115,7 @@ namespace EliteTrader
                     }
 
                     i++;
+                    s.location = DbGeometry.PointFromText($"POINT({s.x} {s.y})", 0);
                     db.Systems.Add(s);
                     if (i % 1000 == 0)
                     {
