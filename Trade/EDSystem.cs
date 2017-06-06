@@ -55,6 +55,7 @@ namespace EliteTrader
             using (var db = new TradeContext())
             {
                 Console.Write("Importing systems");
+                var start = DateTime.Now;
 
                 systems = csv.GetRecords<EDSystem>();
                 db.Configuration.AutoDetectChangesEnabled = false;
@@ -74,7 +75,8 @@ namespace EliteTrader
                 db.SaveChanges();
                 db.Configuration.AutoDetectChangesEnabled = true;
                 db.Configuration.ValidateOnSaveEnabled = true;
-                Console.WriteLine($"Found {i} systems");
+                var duration = DateTime.Now - start;
+                Console.WriteLine($"Found {i} systems in {duration.ToString()}");
             }
 
         }
