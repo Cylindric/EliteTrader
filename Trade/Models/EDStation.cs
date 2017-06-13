@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
+using System.Linq;
 using System.Net;
 using Trade;
 
-namespace EliteTrader
+namespace EliteTrader.Models
 {
     public class EDStation
     {
@@ -20,16 +21,16 @@ namespace EliteTrader
 
         public int? system_id { get; set; }
         public int? updated_at { get; set; }
-        public string max_landing_pad_size { get; set; }
+        //public string max_landing_pad_size { get; set; }
         public int? distance_to_star { get; set; }
         public int? government_id { get; set; }
-        public string government { get; set; }
+        //public string government { get; set; }
         public int? allegiance_id { get; set; }
-        public string allegiance { get; set; }
+        //public string allegiance { get; set; }
         public int? state_id { get; set; }
-        public string state { get; set; }
+        //public string state { get; set; }
         public int? type_id { get; set; }
-        public string type { get; set; }
+        //public string type { get; set; }
         public bool has_blackmarket { get; set; }
         public bool has_market { get; set; }
         public bool has_refuel { get; set; }
@@ -39,21 +40,21 @@ namespace EliteTrader
         public bool has_shipyard { get; set; }
         public bool has_docking { get; set; }
         public bool has_commodities { get; set; }
-        public List<string> import_commodities { get; set; }
-        public List<string> export_commodities { get; set; }
-        public List<string> prohibited_commodities { get; set; }
-        public List<string> economies { get; set; }
+        //public List<string> import_commodities { get; set; }
+        //public List<string> export_commodities { get; set; }
+        //public List<string> prohibited_commodities { get; set; }
+        //public List<string> economies { get; set; }
         public int? shipyard_updated_at { get; set; }
         public int? outfitting_updated_at { get; set; }
         public int? market_updated_at { get; set; }
         public bool is_planetary { get; set; }
-        public List<string> selling_ships { get; set; }
-        public List<int> selling_modules { get; set; }
-        public object settlement_size_id { get; set; }
-        public object settlement_size { get; set; }
-        public object settlement_security_id { get; set; }
-        public object settlement_security { get; set; }
-        public object body_id { get; set; }
+        //public List<string> selling_ships { get; set; }
+        //public List<int> selling_modules { get; set; }
+        public int? settlement_size_id { get; set; }
+        //public object settlement_size { get; set; }
+        public int? settlement_security_id { get; set; }
+        //public object settlement_security { get; set; }
+        public int? body_id { get; set; }
         public int? controlling_minor_faction_id { get; set; }
 
         private static string DataPath;
@@ -61,6 +62,27 @@ namespace EliteTrader
         static EDStation()
         {
             DataPath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "stations.json");
+        }
+
+        public static void Update()
+        {
+            DateTime lastUpdate = DateTime.MinValue;
+
+            using (var db = new TradeContext())
+            {
+                var settings = db.Settings.FirstOrDefault();
+                if (settings != null && settings.LastStationUpdate.HasValue)
+                {
+                    lastUpdate = settings.LastStationUpdate.Value;
+                }
+            }
+
+            if (lastUpdate < DateTime.Now.AddDays(-2))
+            {
+                DownloadData();
+                LoadFromFile();
+            }
+
         }
 
         public static void DownloadData()

@@ -63,23 +63,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Migrations\201705281634108_InitialCreate.cs" />
-    <Compile Include="Migrations\201705281634108_InitialCreate.Designer.cs">
-      <DependentUpon>201705281634108_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201706061337355_AddIndexToSystem.cs" />
-    <Compile Include="Migrations\201706061337355_AddIndexToSystem.Designer.cs">
-      <DependentUpon>201706061337355_AddIndexToSystem.cs</DependentUpon>
+    <Compile Include="Migrations\201706131017009_InitialCreate.cs" />
+    <Compile Include="Migrations\201706131017009_InitialCreate.Designer.cs">
+      <DependentUpon>201706131017009_InitialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\Settings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="EDStation.cs" />
-    <Compile Include="EDSystem.cs" />
+    <Compile Include="Models\EDStation.cs" />
+    <Compile Include="Models\EDSystem.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="RouteFinder.cs" />
     <Compile Include="SqlServerTypes\Loader.cs" />
     <Compile Include="TradeContext.cs" />
   </ItemGroup>
@@ -90,14 +88,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201705281634108_InitialCreate.resx">
-      <DependentUpon>201705281634108_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201706061337355_AddIndexToSystem.resx">
-      <DependentUpon>201706061337355_AddIndexToSystem.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="SqlServerTypes\readme.htm" />
@@ -113,6 +103,11 @@
     <Content Include="SqlServerTypes\x86\SqlServerSpatial140.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201706131017009_InitialCreate.resx">
+      <DependentUpon>201706131017009_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

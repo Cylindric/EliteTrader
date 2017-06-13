@@ -13,7 +13,7 @@ namespace Trade.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201705281634108_InitialCreate"; }
+            get { return "201706131017009_InitialCreate"; }
         }
         
         string IMigrationMetadata.Source

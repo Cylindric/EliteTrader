@@ -1,4 +1,7 @@
-﻿SELECT COUNT(*) FROM EDStations;
+﻿SELECT * FROM sys.database_files;
+SELECT * FROM __MigrationHistory;
+
+SELECT COUNT(*) FROM EDStations;
 SELECT TOP 100 * FROM EDStations;
 
 SELECT COUNT(*) FROM EDSystems; -- 7,505,000
@@ -7,6 +10,8 @@ SELECT TOP 100 * FROM EDSystems WHERE population>0;
 SELECT * FROM EDSystems WHERE x is null OR y is null OR z is null;
 
 SELECT * FROM EDsystems WHERE name = '18 Comae Berenices'; -- 8, 17.90625	200.0313	-7
+SELECT * FROM EDsystems WHERE name like 'Ringardha%'; -- 8, 17.90625	200.0313	-7
+SELECT * FROM EDsystems WHERE name like 'Te Kaha%' ORDER BY name; -- 8, 17.90625	200.0313	-7
 
 SELECT name AS [Database Name], recovery_model_desc AS [Recovery Model] FROM sys.databases
 DBCC SHRINKFILE ('Trade.mdf', TRUNCATEONLY);
@@ -14,7 +19,7 @@ DBCC SHRINKFILE ('Trade.mdf', 0);
 DBCC SHRINKFILE ('Trade_log.ldf', 0);
 DBCC SHRINKFILE ('Trade_log.ldf', TRUNCATEONLY);
 
-SELECT * FROM EDSystems WHERE [Name] LIKE 'Olgrea%' -- DECLARE @X FLOAT = -28.125;DECLARE @Y FLOAT = 68.28125;DECLARE @Z FLOAT = -6.375;
+SELECT TOP 100 * FROM EDSystems WHERE [Name] LIKE 'Olgrea%' -- DECLARE @X FLOAT = -28.125;DECLARE @Y FLOAT = 68.28125;DECLARE @Z FLOAT = -6.375;
 
 
 -- precise distance (00:20)

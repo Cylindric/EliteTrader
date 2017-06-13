@@ -8,6 +8,16 @@ namespace Trade.Migrations
         public override void Up()
         {
             CreateTable(
+                "dbo.Settings",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        LastStationUpdate = c.DateTime(),
+                        LastSystemUpdate = c.DateTime(),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
                 "dbo.EDStations",
                 c => new
                     {
@@ -15,16 +25,11 @@ namespace Trade.Migrations
                         name = c.String(maxLength: 100),
                         system_id = c.Int(),
                         updated_at = c.Int(),
-                        max_landing_pad_size = c.String(),
                         distance_to_star = c.Int(),
                         government_id = c.Int(),
-                        government = c.String(),
                         allegiance_id = c.Int(),
-                        allegiance = c.String(),
                         state_id = c.Int(),
-                        state = c.String(),
                         type_id = c.Int(),
-                        type = c.String(),
                         has_blackmarket = c.Boolean(nullable: false),
                         has_market = c.Boolean(nullable: false),
                         has_refuel = c.Boolean(nullable: false),
@@ -38,6 +43,9 @@ namespace Trade.Migrations
                         outfitting_updated_at = c.Int(),
                         market_updated_at = c.Int(),
                         is_planetary = c.Boolean(nullable: false),
+                        settlement_size_id = c.Int(),
+                        settlement_security_id = c.Int(),
+                        body_id = c.Int(),
                         controlling_minor_faction_id = c.Int(),
                     })
                 .PrimaryKey(t => t.id)
@@ -50,43 +58,40 @@ namespace Trade.Migrations
                         id = c.Int(nullable: false, identity: true),
                         edsm_id = c.Int(),
                         name = c.String(maxLength: 100),
-                        x = c.Single(),
-                        y = c.Single(),
-                        z = c.Single(),
+                        x = c.Single(nullable: false),
+                        y = c.Single(nullable: false),
+                        z = c.Single(nullable: false),
+                        location = c.Geometry(),
                         population = c.Long(),
                         is_populated = c.Int(),
                         government_id = c.Int(),
-                        government = c.String(),
                         allegiance_id = c.Int(),
-                        allegiance = c.String(),
                         state_id = c.Int(),
-                        state = c.String(),
                         security_id = c.Int(),
-                        security = c.String(),
                         primary_economy_id = c.Int(),
-                        primary_economy = c.String(),
-                        power = c.String(),
-                        power_state = c.String(),
                         power_state_id = c.Int(),
                         needs_permit = c.Boolean(nullable: false),
                         updated_at = c.Int(),
-                        simbad_ref = c.String(),
                         controlling_minor_faction_id = c.Int(),
-                        controlling_minor_faction = c.String(),
                         reserve_type_id = c.Int(),
-                        reserve_type = c.String(),
                     })
                 .PrimaryKey(t => t.id)
-                .Index(t => t.name);
+                .Index(t => t.name)
+                .Index(t => new { t.x, t.y, t.z }, name: "ixCoordinates");
+
+            // Sql("CREATE SPATIAL INDEX ixLocation ON EDSystems (location)");
             
         }
         
         public override void Down()
         {
+            DropIndex("dbo.EDSystems", "ixCoordinates");
+            // DropIndex("dbo.EDSystems", "ixLocation");
             DropIndex("dbo.EDSystems", new[] { "name" });
             DropIndex("dbo.EDStations", new[] { "name" });
             DropTable("dbo.EDSystems");
             DropTable("dbo.EDStations");
+            DropTable("dbo.Settings");
         }
     }
 }
