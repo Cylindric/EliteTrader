@@ -1,0 +1,3 @@
+[submodule "raptordb"]
+	path = raptordb
+	url = https://git01.codeplex.com/raptordb

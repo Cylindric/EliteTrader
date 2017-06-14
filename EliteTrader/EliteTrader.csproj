@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
+      <HintPath>..\packages\CsvHelper.2.16.3.0\lib\net45\CsvHelper.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -57,6 +60,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\raptordb\RaptorDB.Common\RaptorDB.Common.csproj">
+      <Project>{32331d51-5be0-41e2-af1a-9b086c5ae809}</Project>
+      <Name>RaptorDB.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\raptordb\RaptorDB\RaptorDB.csproj">
+      <Project>{45f6be30-989a-4749-b6a0-69099c8661f4}</Project>
+      <Name>RaptorDB</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Trade\Trade.csproj">
       <Project>{6b3692ce-6908-4292-8844-d00cab9ed742}</Project>
       <Name>Trade</Name>
