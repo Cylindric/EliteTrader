@@ -114,17 +114,20 @@ namespace EliteTrader.Models
             }
 
             // https://eddb.io/archive/v5/systems.csv
+
+            var totalSystemCount = File.ReadLines(DataPath).Count();
+
             IEnumerable<EDSystem> systems;
             using (Stream stream = File.Open(DataPath, FileMode.Open, FileAccess.Read, FileShare.Read))
             using (StreamReader streamReader = new StreamReader(stream))
             using (CsvReader csv = new CsvReader(streamReader))
             {
-                Console.WriteLine("Importing systems");
+                Console.WriteLine($"Importing {totalSystemCount:n0} systems");
                 var start = DateTime.Now;
 
                 systems = csv.GetRecords<EDSystem>();
 
-                Truncate();
+               Truncate();
 
                 TradeContext db = null;
                 DateTime batchStart = DateTime.Now;
@@ -132,69 +135,49 @@ namespace EliteTrader.Models
 
                 // Stats
                 var timeCreatingContext = new TimeSpan(0);
+                var timePickingRecords = new TimeSpan(0);
+                var timeSavingData = new TimeSpan(0);
 
-                // SkipTake and add as a batch, commit every 50,000 records: 500/sec
-                IEnumerable <EDSystem> sys;
-                do
+
+                foreach(var sys in systems)
                 {
-                    sys = systems.Skip(i).Take(IMPORT_BATCH_SIZE);
-                    if (sys.Count() == 0)
-                    {
-                        break;
-                    }
-
                     var t = DateTime.Now;
-                    db = new TradeContext();
-                    db.Configuration.AutoDetectChangesEnabled = false;
-                    db.Configuration.ValidateOnSaveEnabled = false;
-                    timeCreatingContext += (DateTime.Now - t);
 
-                    foreach (var x in sys)
+                    if (db == null)
                     {
-                        x.location = DbGeometry.PointFromText($"POINT({x.x} {x.y})", 0);
-                        db.Systems.Add(x);
+                        db = new TradeContext();
+                        db.Configuration.AutoDetectChangesEnabled = false;
+                        db.Configuration.ValidateOnSaveEnabled = false;
+                        timeCreatingContext += (DateTime.Now - t);
                     }
+
+                    sys.location = DbGeometry.PointFromText($"POINT({sys.x} {sys.y})", 0);
+
+
+                    //if (db.Systems.Any(s => s.name == sys.name))
+                    //{
+                        // already exists
+                    //}
+                    //else
+                    //{
+                        db.Systems.Add(sys);
+                    //}
 
                     if (i % IMPORT_BATCH_SIZE == 0)
                     {
+                        t = DateTime.Now;
                         db.SaveChanges();
                         db.Dispose();
                         db = null;
+                        timeSavingData += (DateTime.Now - t);
 
                         var batchTime = DateTime.Now - batchStart;
-                        Console.WriteLine($"{i:n0} {(IMPORT_BATCH_SIZE / batchTime.TotalSeconds):n0}/s ({IMPORT_BATCH_SIZE} took {batchTime.TotalSeconds} seconds)");
+                        Console.WriteLine($"{i:n0} ({((float)i/totalSystemCount):P1}) {(IMPORT_BATCH_SIZE / batchTime.TotalSeconds):n0}/s ({IMPORT_BATCH_SIZE} took {batchTime.TotalSeconds:n1} seconds)");
                         batchStart = DateTime.Now;
                     }
 
-                    i += IMPORT_BATCH_SIZE;
-                } while (sys.Count() > 0);
-
-
-
-                // Individual loop and add, commit every 50,000 records: 500/sec
-                //foreach (var s in systems)
-                //{
-                //    if (db == null)
-                //    {
-                //        db = new TradeContext();
-                //        db.Configuration.AutoDetectChangesEnabled = false;
-                //        db.Configuration.ValidateOnSaveEnabled = false;
-                //    }
-
-                //    i++;
-                //    s.location = DbGeometry.PointFromText($"POINT({s.x} {s.y})", 0);
-                //    db.Systems.Add(s);
-                //    if (i % IMPORT_BATCH_SIZE == 0)
-                //    {
-                //        db.SaveChanges();
-                //        db.Dispose();
-                //        db = null;
-
-                //        var batchTime = DateTime.Now - batchStart;
-                //        Console.WriteLine($"{i:n0} {(IMPORT_BATCH_SIZE / batchTime.TotalSeconds):n0}/s ({IMPORT_BATCH_SIZE} took {batchTime.TotalSeconds} seconds)");
-                //        batchStart = DateTime.Now;
-                //    }
-                //}
+                    i++;
+                }
 
                 if (db != null)
                 {

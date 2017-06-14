@@ -22,6 +22,11 @@ DBCC SHRINKFILE ('Trade_log.ldf', TRUNCATEONLY);
 SELECT TOP 100 * FROM EDSystems WHERE [Name] LIKE 'Olgrea%' -- DECLARE @X FLOAT = -28.125;DECLARE @Y FLOAT = 68.28125;DECLARE @Z FLOAT = -6.375;
 
 
+
+DROP INDEX [PositionIndex] ON [dbo].[EDSystems];
+DROP INDEX [IX_name] ON [dbo].[EDSystems];
+
+
 -- precise distance (00:20)
 DECLARE @JumpRange FLOAT = 30;
 DECLARE @X FLOAT = 0; DECLARE @Y FLOAT = 0; DECLARE @Z FLOAT = 0;
