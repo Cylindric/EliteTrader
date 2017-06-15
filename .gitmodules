@@ -1,3 +1,6 @@
 [submodule "raptordb"]
 	path = raptordb
 	url = https://git01.codeplex.com/raptordb
+[submodule "LiteDB"]
+	path = LiteDB
+	url = https://github.com/mbdavid/LiteDB.git

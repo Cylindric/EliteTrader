@@ -1,8 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -12,13 +10,8 @@ namespace EliteTrader.Models
 {
     public class EDStation
     {
-        [Key]
         public int id { get; set; }
-
-        [Index()]
-        [MaxLength(100)]
         public string name { get; set; }
-
         public int? system_id { get; set; }
         public int? updated_at { get; set; }
         //public string max_landing_pad_size { get; set; }
@@ -68,20 +61,20 @@ namespace EliteTrader.Models
         {
             DateTime lastUpdate = DateTime.MinValue;
 
-            using (var db = new TradeContext())
-            {
-                var settings = db.Settings.FirstOrDefault();
-                if (settings != null && settings.LastStationUpdate.HasValue)
-                {
-                    lastUpdate = settings.LastStationUpdate.Value;
-                }
-            }
+            //using (var db = new TradeContext())
+            //{
+            //    var settings = db.Settings.FirstOrDefault();
+            //    if (settings != null && settings.LastStationUpdate.HasValue)
+            //    {
+            //        lastUpdate = settings.LastStationUpdate.Value;
+            //    }
+            //}
 
-            if (lastUpdate < DateTime.Now.AddDays(-2))
-            {
-                DownloadData();
-                LoadFromFile();
-            }
+            //if (lastUpdate < DateTime.Now.AddDays(-2))
+            //{
+            //    DownloadData();
+            //    LoadFromFile();
+            //}
 
         }
 
@@ -113,42 +106,42 @@ namespace EliteTrader.Models
                 DownloadData();
             }
 
-            // https://eddb.io/archive/v5/stations.json
-            IEnumerable<EDStation> stations;
-            using (Stream stream = File.Open(DataPath, FileMode.Open, FileAccess.Read, FileShare.Read))
-            using (StreamReader streamReader = new StreamReader(stream))
-            using (JsonTextReader reader = new JsonTextReader(streamReader))
-            using (var db = new TradeContext())
-            {
-                Console.Write("Importing stations");
+            //// https://eddb.io/archive/v5/stations.json
+            //IEnumerable<EDStation> stations;
+            //using (Stream stream = File.Open(DataPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            //using (StreamReader streamReader = new StreamReader(stream))
+            //using (JsonTextReader reader = new JsonTextReader(streamReader))
+            //using (var db = new TradeContext())
+            //{
+            //    Console.Write("Importing stations");
 
-                var serializer = new JsonSerializer();
-                var settings = new JsonSerializerSettings()
-                {
-                    MissingMemberHandling = MissingMemberHandling.Ignore
-                };
+            //    var serializer = new JsonSerializer();
+            //    var settings = new JsonSerializerSettings()
+            //    {
+            //        MissingMemberHandling = MissingMemberHandling.Ignore
+            //    };
 
-                stations = serializer.Deserialize<IEnumerable<EDStation>>(reader);
+            //    stations = serializer.Deserialize<IEnumerable<EDStation>>(reader);
 
-                db.Configuration.AutoDetectChangesEnabled = false;
-                db.Configuration.ValidateOnSaveEnabled = false;
-                db.Database.ExecuteSqlCommand("TRUNCATE TABLE [EDStations]");
-                int i = 0;
-                foreach(var s in stations)
-                {
-                    i++;
-                    db.Stations.Add(s);
-                    if (i % 1000 == 0)
-                    {
-                        db.SaveChanges();
-                        Console.Write(".");
-                    }
-                }
-                db.SaveChanges();
-                db.Configuration.AutoDetectChangesEnabled = true;
-                db.Configuration.ValidateOnSaveEnabled = true;
-                Console.WriteLine($"Found {i} stations");
-            }
+            //    db.Configuration.AutoDetectChangesEnabled = false;
+            //    db.Configuration.ValidateOnSaveEnabled = false;
+            //    db.Database.ExecuteSqlCommand("TRUNCATE TABLE [EDStations]");
+            //    int i = 0;
+            //    foreach(var s in stations)
+            //    {
+            //        i++;
+            //        db.Stations.Add(s);
+            //        if (i % 1000 == 0)
+            //        {
+            //            db.SaveChanges();
+            //            Console.Write(".");
+            //        }
+            //    }
+            //    db.SaveChanges();
+            //    db.Configuration.AutoDetectChangesEnabled = true;
+            //    db.Configuration.ValidateOnSaveEnabled = true;
+            //    Console.WriteLine($"Found {i} stations");
+            //}
         }
     }
 }

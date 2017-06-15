@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using CsvHelper;
 using System.IO;
-using Trade;
 using System.Net;
-using System.Data.Entity.Spatial;
 using System.Linq;
 using CsvHelper.Configuration;
 using Trade.Maps;
+using LiteDB;
 
 namespace EliteTrader.Models
 {
@@ -16,7 +15,10 @@ namespace EliteTrader.Models
         public Guid gid { get; set; }
         public int id { get; set; }
         public int edsm_id { get; set; }
+
+        [BsonIndex()]
         public string name { get; set; }
+
         public float x { get; set; }
         public float y { get; set; }
         public float z { get; set; }
@@ -32,17 +34,15 @@ namespace EliteTrader.Models
         public int updated_at { get; set; }
         public int controlling_minor_faction_id { get; set; }
         public int reserve_type_id { get; set; }
-        // public DbGeometry location { get; set; }
 
+        private static string DbFile;
         private static string DataPath;
         private const int IMPORT_BATCH_SIZE = 50000;
-
-        public static RaptorDB.RaptorDB rdb;
-
 
         static EDSystem()
         {
             DataPath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "systems.csv");
+            DbFile = @"E:\Temp\systems.db";
         }
 
         public EDSystem()
@@ -118,8 +118,16 @@ namespace EliteTrader.Models
             config.WillThrowOnMissingField = false;
             config.RegisterClassMap<EDSystemMap>();
 
-            IEnumerable<EDSystem> systems;
-            using (Stream stream = File.Open(DataPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            IEnumerable<EDSystem> newSystems;
+
+            // Initial import assumes a clean System list
+            if (File.Exists(DbFile))
+            {
+                File.Delete(DbFile);
+            }
+
+
+            using (Stream stream = File.Open(DataPath, System.IO.FileMode.Open, FileAccess.Read, FileShare.Read))
             using (StreamReader streamReader = new StreamReader(stream))
             using (CsvReader csv = new CsvReader(streamReader, config))
             {
@@ -127,67 +135,67 @@ namespace EliteTrader.Models
                 Console.WriteLine($"Importing {totalSystemCount:n0} systems");
                 var start = DateTime.Now;
 
-                systems = csv.GetRecords<EDSystem>();
+                newSystems = csv.GetRecords<EDSystem>();
 
-                //               Truncate();
-
-                //                TradeContext db = null;
                 DateTime batchStart = DateTime.Now;
                 int i = 0;
 
-                //                // Stats
-                //                var timeCreatingContext = new TimeSpan(0);
-                //                var timePickingRecords = new TimeSpan(0);
-                //                var timeSavingData = new TimeSpan(0);
 
+                var insertTime = new TimeSpan();
+                var indexTime = new TimeSpan();
 
-                foreach (var sys in systems)
+                var insertBatch = new List<EDSystem>();
+                var insertedCount = 0;
+
+                foreach (var sys in newSystems)
                 {
-                    var t = DateTime.Now;
+                    insertBatch.Add(sys);
+                    insertedCount++;
 
-                    //                    if (db == null)
-                    //                    {
-                    //                        db = new TradeContext();
-                    //                        db.Configuration.AutoDetectChangesEnabled = false;
-                    //                        db.Configuration.ValidateOnSaveEnabled = false;
-                    //                        timeCreatingContext += (DateTime.Now - t);
-                    //                    }
+                    if (insertBatch.Count >= IMPORT_BATCH_SIZE)
+                    {
+                        try
+                        {
+                            using (var db = new LiteDatabase($"filename={DbFile};journal=false"))
+                            {
+                                var systems = db.GetCollection<EDSystem>("systems");
+                                var t = DateTime.Now;
+                                systems.Insert(insertBatch);
+                                insertTime += (DateTime.Now - t);
 
-                    //sys.location = DbGeometry.PointFromText($"POINT({sys.x} {sys.y})", 0);
+                                t = DateTime.Now;
+                                systems.EnsureIndex(x => x.name);
+                                indexTime += (DateTime.Now - t);
 
-                    rdb.Save(sys.gid, sys);
+                                insertBatch.Clear();
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                        }
 
-
-                    //                    //if (db.Systems.Any(s => s.name == sys.name))
-                    //                    //{
-                    //                        // already exists
-                    //                    //}
-                    //                    //else
-                    //                    //{
-                    //                        db.Systems.Add(sys);
-                    //                    //}
+                    }
 
                     if (i > 0 && i % IMPORT_BATCH_SIZE == 0)
                     {
-                        t = DateTime.Now;
-                        //                        db.SaveChanges();
-                        //                        db.Dispose();
-                        //                        db = null;
-                        //                        timeSavingData += (DateTime.Now - t);
-
                         var batchTime = DateTime.Now - batchStart;
-                        Console.WriteLine($"{i:n0} ({((float)i / totalSystemCount):P1}) {(IMPORT_BATCH_SIZE / batchTime.TotalSeconds):n0}/s ({IMPORT_BATCH_SIZE} took {batchTime.TotalSeconds:n1} seconds)");
+                        Console.WriteLine($"{i:n0} ({((float)i / totalSystemCount):P1}) {(IMPORT_BATCH_SIZE / batchTime.TotalSeconds):n0}/s ({IMPORT_BATCH_SIZE} took {batchTime.TotalSeconds:n1} seconds); inserterted {insertedCount:n0}. ins:{insertTime}, idx:{indexTime}");
                         batchStart = DateTime.Now;
                     }
 
                     i++;
                 }
 
-                //                if (db != null)
-                //                {
-                //                    db.SaveChanges();
-                //                    db.Dispose();
-                //                }
+                if (insertBatch.Count >= IMPORT_BATCH_SIZE)
+                {
+                    using (var db = new LiteDatabase($"filename={DbFile};journal=false"))
+                    {
+                        var systems = db.GetCollection<EDSystem>("systems");
+                        systems.Insert(insertBatch);
+                        insertBatch.Clear();
+                    }
+                }
 
                 var duration = DateTime.Now - start;
                 Console.WriteLine($"Found {i} systems in {duration.ToString()}");
@@ -198,12 +206,16 @@ namespace EliteTrader.Models
 
         public static EDSystem Find(string name)
         {
-            EDSystem system = null;
-            //            using (var db = new TradeContext())
-            //            {
-            //                system = db.Systems.Where(s => s.name == name).FirstOrDefault();
-            //            }
-            return system;
+            using (var db = new LiteDatabase($"filename={DbFile}"))
+            {
+
+                var col = db.GetCollection<EDSystem>("systems");
+                // col.EnsureIndex("name");
+                var ix = col.GetIndexes();
+                var results = col.FindOne(x => x.name == name);
+                return results;
+
+            }
         }
 
         //        private static void Truncate()

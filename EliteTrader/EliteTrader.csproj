@@ -60,14 +60,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\raptordb\RaptorDB.Common\RaptorDB.Common.csproj">
-      <Project>{32331d51-5be0-41e2-af1a-9b086c5ae809}</Project>
-      <Name>RaptorDB.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\raptordb\RaptorDB\RaptorDB.csproj">
-      <Project>{45f6be30-989a-4749-b6a0-69099c8661f4}</Project>
-      <Name>RaptorDB</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Trade\Trade.csproj">
       <Project>{6b3692ce-6908-4292-8844-d00cab9ed742}</Project>
       <Name>Trade</Name>
