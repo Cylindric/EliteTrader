@@ -13,7 +13,7 @@ namespace EliteTrader
         static void Main(string[] args)
         {
             EDSystem.Update();
-            EDStation.Update();
+            // EDStation.Update();
             
             var j = new RouteFinder();
             j.JumpRange = 30.0F;

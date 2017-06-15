@@ -12,11 +12,8 @@ namespace EliteTrader.Models
 {
     public class EDStation
     {
-        [Key]
         public int id { get; set; }
 
-        [Index()]
-        [MaxLength(100)]
         public string name { get; set; }
 
         public int? system_id { get; set; }
@@ -58,6 +55,7 @@ namespace EliteTrader.Models
         public int? controlling_minor_faction_id { get; set; }
 
         private static string DataPath;
+        private static List<EDStation> _MasterStationList = new List<EDStation>();
 
         static EDStation()
         {
@@ -67,15 +65,6 @@ namespace EliteTrader.Models
         public static void Update()
         {
             DateTime lastUpdate = DateTime.MinValue;
-
-            using (var db = new TradeContext())
-            {
-                var settings = db.Settings.FirstOrDefault();
-                if (settings != null && settings.LastStationUpdate.HasValue)
-                {
-                    lastUpdate = settings.LastStationUpdate.Value;
-                }
-            }
 
             if (lastUpdate < DateTime.Now.AddDays(-2))
             {
@@ -118,7 +107,6 @@ namespace EliteTrader.Models
             using (Stream stream = File.Open(DataPath, FileMode.Open, FileAccess.Read, FileShare.Read))
             using (StreamReader streamReader = new StreamReader(stream))
             using (JsonTextReader reader = new JsonTextReader(streamReader))
-            using (var db = new TradeContext())
             {
                 Console.Write("Importing stations");
 
@@ -130,23 +118,16 @@ namespace EliteTrader.Models
 
                 stations = serializer.Deserialize<IEnumerable<EDStation>>(reader);
 
-                db.Configuration.AutoDetectChangesEnabled = false;
-                db.Configuration.ValidateOnSaveEnabled = false;
-                db.Database.ExecuteSqlCommand("TRUNCATE TABLE [EDStations]");
                 int i = 0;
                 foreach(var s in stations)
                 {
                     i++;
-                    db.Stations.Add(s);
+                    _MasterStationList.Add(s);
                     if (i % 1000 == 0)
                     {
-                        db.SaveChanges();
                         Console.Write(".");
                     }
                 }
-                db.SaveChanges();
-                db.Configuration.AutoDetectChangesEnabled = true;
-                db.Configuration.ValidateOnSaveEnabled = true;
                 Console.WriteLine($"Found {i} stations");
             }
         }
