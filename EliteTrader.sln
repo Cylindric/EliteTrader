@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EliteTrader", "EliteTrader\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trade", "Trade\Trade.csproj", "{6B3692CE-6908-4292-8844-D00CAB9ED742}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeTests", "TradeTests\TradeTests.csproj", "{5E4A82E4-CA13-400F-99CD-02630E446022}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{6B3692CE-6908-4292-8844-D00CAB9ED742}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B3692CE-6908-4292-8844-D00CAB9ED742}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B3692CE-6908-4292-8844-D00CAB9ED742}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E4A82E4-CA13-400F-99CD-02630E446022}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E4A82E4-CA13-400F-99CD-02630E446022}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E4A82E4-CA13-400F-99CD-02630E446022}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E4A82E4-CA13-400F-99CD-02630E446022}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,75 @@
+id,edsm_id,name,x,y,z,population,is_populated,government_id,government,allegiance_id,allegiance,state_id,state,security_id,security,primary_economy_id,primary_economy,power,power_state,power_state_id,needs_permit,updated_at,simbad_ref,controlling_minor_faction_id,controlling_minor_faction,reserve_type_id,reserve_type
+19883,23395,"48 Cassiopeiae",-88.3125,18.28125,-71.40625,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495902063,"48 Cassiopeiae",,,,
+2041,3374,"BD+72 545",-48.375,61.71875,-40.21875,9096781,1,112,Dictatorship,1,Alliance,16,Boom,48,High,4,Industrial,"Edmund Mahon",Exploited,32,0,1495731216,"BD+72 545",14987,"United BD+72 545 Conservatives",,
+21521,23633,"Bei Dou Sector CQ-Y b4",-44.625,55.125,-38.53125,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495557814,,,,,
+20021,23639,"Bei Dou Sector FW-W b1-2",-49,66.3125,-16.8125,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495930366,,,,,
+2863,9659,"Cao Junga",-139.4375,7.46875,-108.53125,40297,1,96,Democracy,3,Federation,80,None,32,Medium,6,Refinery,,,,0,1495891619,,1663,"Cao Junga Republic Party",,
+26982,38503,"Col 285 Sector QT-Q c5-10",-134.90625,6.65625,-117.34375,,1,96,Democracy,3,Federation,80,None,16,Low,5,Military,,,,0,1495821641,,1663,"Cao Junga Republic Party",,
+2884,12494,Caraceni,-49.40625,63.6875,-49.3125,39469674,1,96,Democracy,1,Alliance,16,Boom,48,High,4,Industrial,"Edmund Mahon",Control,16,0,1495937587,,48948,"Movement for Caraceni Future",,
+2915,13387,Carnsan,-69.4375,42,-52.4375,14710155,1,96,Democracy,1,Alliance,80,None,48,High,4,Industrial,,,,0,1495905871,,58832,"Future of Udegoci",,
+21968,23695,"Cephei Sector BA-A d95",-96.84375,9,-76.875,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495598117,,,,,
+42126,102956,"Cephei Sector CA-A c19",-104.5625,10.90625,-79.625,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495854354,,,,,
+21969,23704,"Cephei Sector DQ-Y b5",-93.0625,15.96875,-76.84375,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495345914,,,,,
+200292,185989,"Cephei Sector GB-X b1-3",-73.46875,35.625,-54.75,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495908520,,,,,
+113835,194782,"Cephei Sector HW-W b1-1",-87,23.625,-58.34375,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495921117,,,,,
+47479,93659,"Cephei Sector IW-W b1-3",-80.15625,28.96875,-55.96875,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495847971,,,,,
+140519,191207,"Col 285 Sector DS-H b11-0",-153.6875,18.40625,-122.40625,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495398107,,,,,
+180158,132878,"Col 285 Sector ES-H b11-3",-131.9375,28.75,-119.375,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495250584,,,,,
+69658,44474,"Col 285 Sector GM-V d2-108",-170.375,19.53125,-148.65625,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1493747468,,,,,
+122653,132822,"Col 285 Sector GN-H b11-2",-140.9375,13.4375,-116.28125,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495318937,,,,,
+51512,185649,"Col 285 Sector JX-T d3-74",-67.625,60.96875,-52.34375,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495710469,,,,,
+100819,157577,"Col 285 Sector KT-F b12-3",-134.03125,6.5625,-103.1875,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495564363,,,,,
+133748,157575,"Col 285 Sector NY-Q c5-18",-157.71875,18.15625,-129.34375,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495386299,,,,,
+441143,132881,"Col 285 Sector NY-Q c5-19",-145.25,19.1875,-120.9375,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495706608,,,,,
+54155,223477,"Col 285 Sector NY-Q c5-3",-159.28125,20.15625,-122.09375,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495778465,,,,,
+53592,157574,"Col 285 Sector PT-Q c5-15",-162.09375,11.4375,-138.5,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495598118,,,,,
+20236,24040,"Col 285 Sector QU-C b14-5",-57.375,59.71875,-52.375,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495222128,,,,,
+517519,171935,"Col 285 Sector ZL-J b10-0",-162.8125,17,-143.59375,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495904075,,,,,
+6708,12847,"HIP 13179",-92.28125,30.875,-79.34375,11772329,1,96,Democracy,3,Federation,16,Boom,32,Medium,4,Industrial,,,,0,1495262546,"HIP 13179",21495,"Workers of HIP 13179 Green Party",,
+60346,24717,"HIP 7333",-110.53125,9.1875,-85.15625,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495545023,,,,,
+250895,1665117,"HIP 73330",-130.09375,120.875,-50.71875,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495362939,,,,,
+9742463,,"HIP 73337",466.34375,56.875,591,,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495404466,,,,,
+1660851,1979022,"HIP 76700",-52.0625,184.5625,171.40625,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1493917530,,,,,
+1700037,4462705,"HIP 76708",53.25,284.21875,462.4375,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1474120426,,,,,
+9695830,,"HIP 76703",26.90625,380.21875,552.34375,,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495345073,,,,,
+8492,1804,"HIP 7670",-124.6875,4.5625,-99.125,119768,1,64,Corporate,4,Independent,80,None,16,Low,6,Refinery,,,,0,1495153832,"HIP 7670",17631,"HIP 7670 Electronics PLC",,
+8493,6184,"HIP 76701",46.78125,41.65625,125.4375,6949746,1,32,Communism,4,Independent,80,None,48,High,4,Industrial,,,,0,1494824258,"HIP 76701",69162,"Citizen Party of HIP 76701",,
+53559,132882,"HIP 8717",-160.4375,16.71875,-131.15625,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495291289,,,,,
+1085908,3844681,"HIP 87176",-57.96875,25,353.59375,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1474118948,,,,,
+8745135,11557482,"HIP 87171",93.59375,-67.125,397.5625,,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1494549010,,,,,
+9140,5001,Hongbiri,-115.53125,1.9375,-97.40625,3296,1,48,Confederacy,4,Independent,80,None,16,Low,11,Colony,,,,0,1495854591,,42991,"Hongbiri Confederacy",2,Major
+11948,10898,"LHS 2522",-24.8125,56.53125,-23.4375,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495909467,"LHS 2522",,,1,Pristine
+12323,17331,"LP 131-55",-25.34375,63.8125,-17.6875,90749,1,64,Corporate,1,Alliance,80,None,32,Medium,6,Refinery,"Edmund Mahon",Exploited,32,0,1495904350,"LP 131-55",49632,"LP 131-55 Life Co",4,Low
+24033,27916,"LP 63-267",-29.90625,55,-29.9375,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495911930,"LP 63-267",,,,
+21031,25212,Liabefa,-77,39,-56,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495835427,,,,,
+135432,157479,"Lyncis Sector XP-P b5-6",-111.96875,30.4375,-99.09375,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495886067,,,,,
+13288,6799,Mapocori,-115.5625,5.75,-91.6875,12420037,1,64,Corporate,4,Independent,80,None,32,Medium,4,Industrial,,,,0,1495911957,,42990,"Mapocori Holdings",2,Major
+27291,25057,"Lalande 2933",-112.46875,7.6875,-88.8125,0,1,64,Corporate,4,Independent,80,None,16,Low,5,Military,,,,0,1495833917,"Lalande 2933",42990,"Mapocori Holdings",1,Pristine
+14917,8441,Ogminegalku,-127.375,3.125,-97.78125,45769,1,64,Corporate,4,Independent,37,Famine,16,Low,6,Refinery,,,,0,1495398383,,57898,"Ogminegalku Power Partners",,
+14960,15691,Olgrea,-28.125,68.28125,-6.375,2394657254,1,64,Corporate,1,Alliance,80,None,48,High,1,Agriculture,"Edmund Mahon",Exploited,32,0,1495930969,,47487,"Olgrea Central PLC",,
+35323,25616,"Ross 451",-36.75,57.3125,-34.25,0,0,176,None,5,None,80,None,16,Low,10,None,,,,0,1495850185,"Ross 451",,,,
+16798,2231,"Sheela Na Gig",-24.9375,67.46875,-12.09375,126149,1,64,Corporate,4,Independent,80,None,32,Medium,11,Colony,"Edmund Mahon",Exploited,32,0,1495930467,,25238,"Silver Travel Inc",4,Low
+24948,29621,"Te Kaha",-172.8125,13.3125,-154.625,100000,1,112,Dictatorship,4,Independent,67,Expansion,48,High,8,Terraforming,,,,0,1495894400,,63372,"Glory for the People Party",,
+551,18056,Agwe,-48.5625,47.53125,-49.125,13696110,1,64,Corporate,1,Alliance,16,Boom,48,High,4,Industrial,"Edmund Mahon",Exploited,32,0,1495906826,,47471,"Tirada Jet Comms Limited",,
+9794,14188,Indri,-79.03125,65.90625,-51.96875,2382707,1,64,Corporate,1,Alliance,16,Boom,48,High,2,Extraction,,,,0,1495906826,,47471,"Tirada Jet Comms Limited",,
+13757,17534,"Mo Dadabi",-75.375,66.53125,-65.6875,36901,1,64,Corporate,1,Alliance,16,Boom,16,Low,6,Refinery,,,,0,1495906826,,47471,"Tirada Jet Comms Limited",3,Common
+17787,6329,Tirada,-56.09375,55.25,-43.09375,28080,1,64,Corporate,1,Alliance,16,Boom,16,Low,6,Refinery,"Edmund Mahon",Exploited,32,0,1495906826,,47471,"Tirada Jet Comms Limited",,
+18686,10503,Vukuapa,-63.875,64.84375,-47.25,1672,1,64,Corporate,1,Alliance,16,Boom,16,Low,2,Extraction,"Edmund Mahon",Exploited,32,0,1495906826,,47471,"Tirada Jet Comms Limited",,
+627,8942,Akbakara,-88.28125,53.71875,-71.5625,5554663,1,96,Democracy,1,Alliance,80,None,32,Medium,4,Industrial,,,,0,1495905871,,58832,"Future of Udegoci",,
+914,8693,Andancan,-75,43,-63,1000,1,96,Democracy,1,Alliance,80,None,16,Low,2,Extraction,,,,0,1495921587,,58832,"Future of Udegoci",,
+1027,6606,Ansari,-84.5,37.59375,-44.71875,41639,1,96,Democracy,1,Alliance,80,None,16,Low,6,Refinery,,,,0,1495905871,,58832,"Future of Udegoci",2,Major
+1865,1287,Baudus,-68.09375,41.0625,-30.96875,147635,1,96,Democracy,1,Alliance,65,Election,32,Medium,5,Military,,,,0,1495905872,,58832,"Future of Udegoci",,
+1871,10668,Baxbalabia,-91.34375,72.25,-68.15625,34255,1,96,Democracy,1,Alliance,80,None,16,Low,6,Refinery,,,,0,1495905871,,58832,"Future of Udegoci",,
+2915,13387,Carnsan,-69.4375,42,-52.4375,14710155,1,96,Democracy,1,Alliance,80,None,48,High,4,Industrial,,,,0,1495905871,,58832,"Future of Udegoci",,
+3263,12249,Chelmen,-65.96875,47.78125,-56.875,8156097,1,96,Democracy,1,Alliance,80,None,32,Medium,3,"High Tech",,,,0,1495905871,,58832,"Future of Udegoci",,
+3291,19578,Chernobo,-96.875,59.8125,-82.625,27814,1,96,Democracy,1,Alliance,80,None,16,Low,6,Refinery,,,,0,1495905871,,58832,"Future of Udegoci",,
+7657,1543,"HIP 43886",-91.53125,69.34375,-74.1875,73187,1,96,Democracy,1,Alliance,80,None,32,Medium,6,Refinery,,,,0,1495905871,"HIP 43886",58832,"Future of Udegoci",3,Common
+11159,688,Kulungan,-77.09375,58.59375,-52.9375,7910417,1,96,Democracy,1,Alliance,80,None,48,High,4,Industrial,,,,0,1495923082,,58832,"Future of Udegoci",,
+12224,3360,"Liu Huang",-87.4375,54.28125,-73.4375,7389420,1,96,Democracy,1,Alliance,80,None,32,Medium,3,"High Tech",,,,0,1495924968,,58832,"Future of Udegoci",2,Major
+12251,10818,Loga,-79.78125,36.53125,-42.0625,414619,1,96,Democracy,1,Alliance,80,None,32,Medium,6,Refinery,,,,0,1495905871,,58832,"Future of Udegoci",,
+13479,7417,"MCC 105",-83,44.9375,-67.15625,53744,1,96,Democracy,1,Alliance,80,None,32,Medium,5,Military,,,,0,1495905871,"MCC 105",58832,"Future of Udegoci",2,Major
+16563,10888,Saureinja,-82.28125,56.96875,-83.9375,64137,1,96,Democracy,1,Alliance,80,None,16,Low,6,Refinery,"Edmund Mahon",Exploited,32,0,1495905871,,58832,"Future of Udegoci",2,Major
+18149,9576,Udegoci,-70,51.71875,-54.5,21719994,1,96,Democracy,1,Alliance,80,None,32,Medium,3,"High Tech",,,,0,1495922669,,58832,"Future of Udegoci",,
+19531,15493,Ye'kuapemas,-70.15625,44.625,-33.65625,39056,1,96,Democracy,1,Alliance,80,None,32,Medium,6,Refinery,,,,0,1495905871,,58832,"Future of Udegoci",2,Major
+18686,10503,Vukuapa,-63.875,64.84375,-47.25,1672,1,64,Corporate,1,Alliance,16,Boom,16,Low,2,Extraction,"Edmund Mahon",Exploited,32,0,1495906826,,47471,"Tirada Jet Comms Limited",,
+19750,18923,Zenmaku,-90.46875,19.375,-62.71875,2488,1,48,Confederacy,3,Federation,80,None,16,Low,2,Extraction,,,,0,1495920774,,41263,"Zenmaku Alliance",,
