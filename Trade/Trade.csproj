@@ -52,7 +52,7 @@
   <ItemGroup>
     <Compile Include="Astrogation.cs" />
     <Compile Include="EDSystemManager.cs" />
-    <Compile Include="Models\Settings.cs" />
+    <Compile Include="Maps\EDSystemMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\EDStation.cs" />
     <Compile Include="Models\EDSystem.cs" />

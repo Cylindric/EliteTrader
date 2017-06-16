@@ -1,10 +1,11 @@
-﻿using System;
+﻿using EliteTrader.Commands;
+using ManyConsole;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using Trade;
-using EliteTrader.Models;
 
 namespace EliteTrader
 {
@@ -12,22 +13,53 @@ namespace EliteTrader
     {
         static void Main(string[] args)
         {
-            EDSystemManager.Instance.Update();
-            // EDStation.Update();
-            
-            var j = new RouteFinder();
-            j.JumpRange = 30.0F;
-            var route=j.Route("Ringardha", "Te Kaha");
+            EDSystemManager.Instance.DataPath = Path.Combine(Properties.Settings.Default.DataPath, "systems.csv");
+            EDSystemManager.Instance.RecentDataPath = Path.Combine(Properties.Settings.Default.DataPath, "systems_recently.csv");
+            // EDSystemManager.Instance.Update();
 
-            Console.WriteLine($"Path found, Ringardha to Te Kaha in {route.Count - 1} jumps.");
-            var i = 0;
-            foreach (var n in route)
+            var retval = 0;
+
+            while (retval <= 0)
             {
-                Console.WriteLine($"{i:n0} {n.name}");
-                i++;
+                try
+                {
+                    Console.Write("> ");
+                    var cmd = new ConsoleCommand(Console.ReadLine());
+                    try
+                    {
+                        retval = Execute(cmd);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Error executing command. {e.Message}");
+                        retval = 0;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Invalid Command. {e.Message}");
+                    retval = 0;
+                }
+            }
+        }
+
+        static int Execute(ConsoleCommand cmd)
+        {
+            ICommand command = new NullCommand();
+
+            switch (cmd.Name)
+            {
+                case "exit":
+                    command = new ExitCommand();
+                    break;
+
+                case "route":
+                    command = new RouteCommand(cmd.Arguments);
+                    break;
             }
 
-
+            return command.Execute();
         }
+
     }
 }

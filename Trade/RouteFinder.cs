@@ -34,7 +34,7 @@ namespace Trade
             _costSoFar = new Dictionary<string, float>();
 
             _frontier.Enqueue(_start, 0);
-            _costSoFar.Add(_start.name, 0);
+            _costSoFar.Add(_start.key, 0);
 
             while(_frontier.Count > 0)
             {
@@ -53,23 +53,23 @@ namespace Trade
                 {
                     var next = kvNext.Value;
 
-                    var new_cost = _costSoFar[current.name] + (float)(1 + 0.0001); // Astrogation.Distance(current, next);
+                    var new_cost = _costSoFar[current.key] + (float)(1 + 0.0001); // Astrogation.Distance(current, next);
                     
-                    if (_costSoFar.ContainsKey(next.name) == false || new_cost < _costSoFar[next.name])
+                    if (_costSoFar.ContainsKey(next.key) == false || new_cost < _costSoFar[next.key])
                     {
-                        if (_costSoFar.ContainsKey(next.name))
+                        if (_costSoFar.ContainsKey(next.key))
                         {
-                            _costSoFar[next.name] = new_cost;
+                            _costSoFar[next.key] = new_cost;
                         }
                         else
                         {
-                            _costSoFar.Add(next.name, new_cost);
+                            _costSoFar.Add(next.key, new_cost);
                         }
 
                         var priority = new_cost + Astrogation.Distance(next, _end); //Astrogation.ManhattanDistance(_end, next);
 
                         _frontier.Enqueue(next, priority);
-                        _cameFrom.Add(next.name, current);
+                        _cameFrom.Add(next.key, current);
                     }
                 }
             }
@@ -79,7 +79,7 @@ namespace Trade
             while (c != _start)
             {
                 path.Add(c);
-                c = _cameFrom[c.name];
+                c = _cameFrom[c.key];
             }
             path.Add(_start);
             path.Reverse();

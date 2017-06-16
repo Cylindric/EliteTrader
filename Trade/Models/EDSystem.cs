@@ -7,7 +7,22 @@ namespace EliteTrader.Models
     {
         public int? id { get; set; }
         //public int? edsm_id { get; set; }
-        public string name { get; set; }
+        public string key { get; private set; }
+
+        private string _name;
+        public string name
+        {
+            get
+            {
+                return _name;
+            }
+            set
+            {
+                _name = value;
+                key = _name.ToLower();
+            }
+        }
+
         public float x { get; set; }
         public float y { get; set; }
         public float z { get; set; }
@@ -27,7 +42,7 @@ namespace EliteTrader.Models
         //public string power_state { get; set; }
         //public int? power_state_id { get; set; }
         public bool needs_permit { get; set; }
-        public int? updated_at { get; set; }
+        public int updated_at { get; set; }
         //public string simbad_ref { get; set; }
         //public int? controlling_minor_faction_id { get; set; }
         //public string controlling_minor_faction { get; set; }
