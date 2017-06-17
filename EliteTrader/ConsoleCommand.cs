@@ -10,7 +10,6 @@ namespace EliteTrader
     public class ConsoleCommand
     {
         public string Name { get; set; }
-        public string LibraryClassName { get; set; }
 
         public IEnumerable<string> Arguments
         {
@@ -33,48 +32,47 @@ namespace EliteTrader
 
         public ConsoleCommand(string input)
         {
-            // Ugly regex to split string on spaces, but preserve quoted text intact:
-            var stringArray =
-                Regex.Split(input,
-                    "(?<=^[^\"]*(?:\"[^\"]*\"[^\"]*)*) (?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
             _arguments = new List<string>();
-            for (int i = 0; i < stringArray.Length; i++)
-            {
-                // The first element is always the command:
-                if (i == 0)
-                {
-                    this.Name = stringArray[i];
+            _namedArgs = new Dictionary<string, string>();
 
-                    // Set the default:
-                    this.LibraryClassName = "DefaultCommands";
-                    string[] s = stringArray[0].Split('.');
-                    if (s.Length == 2)
-                    {
-                        this.LibraryClassName = s[0];
-                        this.Name = s[1];
-                    }
+            input = input.Trim();
+            if (string.IsNullOrEmpty(input))
+            {
+                return;
+            }
+
+            string token = string.Empty;
+            bool inQuoted = false;
+
+            foreach (char c in input)
+            {
+                if (c == '"')
+                {
+                    inQuoted = !inQuoted;
+                }
+                else if (inQuoted == false && c == ' ')
+                {
+                    // A space usually delimits tokens, unless we're in the middle of a quoted string
+                    _arguments.Add(token);
+                    token = string.Empty;
                 }
                 else
                 {
-                    var inputArgument = stringArray[i];
-                    string argument = inputArgument;
-
-                    // Is the argument a quoted text string?
-                    var regex = new Regex("\"(.*?)\"", RegexOptions.Singleline);
-                    var match = regex.Match(inputArgument);
-
-                    if (match.Captures.Count > 0)
-                    {
-                        // Get the unquoted text:
-                        var captureQuotedText = new Regex("[^\"]*[^\"]");
-                        var quoted = captureQuotedText.Match(match.Captures[0].Value);
-                        argument = quoted.Captures[0].Value;
-                    }
-                    _arguments.Add(argument);
+                    token += c;
                 }
             }
 
-            _namedArgs = new Dictionary<string, string>();
+            // There will probably be a trailing token, add that too.
+            if (!string.IsNullOrEmpty(token))
+            {
+                _arguments.Add(token);
+            }
+
+            // The first token is the command name.
+            Name = _arguments[0];
+            _arguments.RemoveAt(0);
+
+            // See if any of the arguments are name/value pairs, and if so store them in the NamedArgs.
             foreach(var arg in _arguments)
             {
                 if (arg.Contains("="))

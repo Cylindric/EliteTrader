@@ -20,6 +20,12 @@ namespace Trade
 
         public List<EDSystem> Route(string fromSystem, string toSystem)
         {
+            var swTotal = new System.Diagnostics.Stopwatch();
+            var swSort = new System.Diagnostics.Stopwatch();
+            var swPriority = new System.Diagnostics.Stopwatch();
+            var swNeighbours = new System.Diagnostics.Stopwatch();
+            swTotal.Start();
+
             var edsm = EDSystemManager.Instance;
             _start = edsm.Find(fromSystem);
             _end = edsm.Find(toSystem);
@@ -36,7 +42,8 @@ namespace Trade
             _frontier.Enqueue(_start, 0);
             _costSoFar.Add(_start.key, 0);
 
-            while(_frontier.Count > 0)
+
+            while (_frontier.Count > 0)
             {
                 var current = _frontier.Dequeue();
 
@@ -44,10 +51,14 @@ namespace Trade
                     break;
                 }
 
+                swNeighbours.Start();
                 var neighbours = edsm.FindInRange(current, JumpRange).ToList();
+                swNeighbours.Stop();
 
                 // sort neighbours to put those closest to the target first
+                swSort.Start();
                 neighbours.OrderBy(x => Astrogation.Distance(x.Value, _end));
+                swSort.Stop();
 
                 foreach(var kvNext in neighbours)
                 {
@@ -66,7 +77,9 @@ namespace Trade
                             _costSoFar.Add(next.key, new_cost);
                         }
 
+                        swPriority.Start();
                         var priority = new_cost + Astrogation.Distance(next, _end); //Astrogation.ManhattanDistance(_end, next);
+                        swPriority.Stop();
 
                         _frontier.Enqueue(next, priority);
                         _cameFrom.Add(next.key, current);
@@ -83,6 +96,10 @@ namespace Trade
             }
             path.Add(_start);
             path.Reverse();
+
+            swTotal.Stop();
+            Console.WriteLine($"total:{swTotal.ElapsedMilliseconds}, sort:{swSort.ElapsedMilliseconds}, priority:{swPriority.ElapsedMilliseconds}, neigh:{swNeighbours.ElapsedMilliseconds}");
+            // Console.WriteLine($"total:{swTotal.ElapsedTicks}, sort:{swSort.ElapsedTicks}, priority:{swPriority.ElapsedTicks}, neigh:{swNeighbours.ElapsedTicks}");
 
             return path; 
         }

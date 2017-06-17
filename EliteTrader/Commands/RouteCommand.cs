@@ -1,7 +1,5 @@
-﻿using ManyConsole;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Diagnostics;
 using Trade;
 
 namespace EliteTrader.Commands
@@ -14,25 +12,52 @@ namespace EliteTrader.Commands
         private string end { get; set; }
         private float range { get; set; }
 
-        public RouteCommand(IEnumerable<string> args)
+        public RouteCommand(ConsoleCommand cmd)
         {
-            if(args.Count() < 3)
+            foreach(var opt in cmd.NamedArguments)
             {
-                throw new ArgumentException();
+                switch (opt.Key)
+                {
+                    case "start":
+                    case "from":
+                        start = opt.Value;
+                        break;
+
+                    case "end":
+                    case "to":
+                        end = opt.Value;
+                        break;
+
+                    case "jump":
+                    case "jmp":
+                        range = (float)Convert.ToDouble(opt.Value);
+                        break;
+                }
             }
 
-            start = args.Skip(0).Take(1).First();
-            end = args.Skip(1).Take(1).First();
-            range = Convert.ToInt32(args.Skip(2).Take(1).First());
+            if (string.IsNullOrEmpty(start))
+            {
+                throw new ArgumentException("Missing Start parameter!");
+            }
+            if (string.IsNullOrEmpty(end))
+            {
+                throw new ArgumentException("Missing End parameter!");
+            }
+            if (range ==  0)
+            {
+                throw new ArgumentException("Missing range parameter!");
+            }
         }
-
 
         public int Execute()
         {
             router.JumpRange = range;
+            var sw = new Stopwatch();
+            sw.Start();
             var route = router.Route(start, end);
+            sw.Stop();
 
-            Console.WriteLine($"Path found, {start} to {end} in {route.Count - 1} jumps.");
+            Console.WriteLine($"Path found, {start} to {end} in {route.Count - 1} jumps. Took {sw.Elapsed.ToString()}");
             var i = 0;
             foreach (var n in route)
             {

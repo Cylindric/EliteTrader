@@ -1,10 +1,6 @@
 ﻿using EliteTrader.Commands;
-using ManyConsole;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using Trade;
 
 namespace EliteTrader
@@ -15,7 +11,7 @@ namespace EliteTrader
         {
             EDSystemManager.Instance.DataPath = Path.Combine(Properties.Settings.Default.DataPath, "systems.csv");
             EDSystemManager.Instance.RecentDataPath = Path.Combine(Properties.Settings.Default.DataPath, "systems_recently.csv");
-            // EDSystemManager.Instance.Update();
+            EDSystemManager.Instance.Update();
 
             var retval = 0;
 
@@ -49,13 +45,20 @@ namespace EliteTrader
 
             switch (cmd.Name)
             {
+                case null:
+                    return 0;
+
                 case "exit":
                     command = new ExitCommand();
                     break;
 
                 case "route":
-                    command = new RouteCommand(cmd.Arguments);
+                    command = new RouteCommand(cmd);
                     break;
+
+                default:
+                    Console.WriteLine("Unrecognised command.");
+                    return 0;
             }
 
             return command.Execute();

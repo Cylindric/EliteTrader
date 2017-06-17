@@ -88,7 +88,7 @@ namespace Trade
         {
             Console.WriteLine($"Downloading {(recent ? "recent " : "")}system data from EDDB...");
 
-            var sourceFile = @"https://eddb.io/archive/v5/systems_recently.csv";
+            var sourceFile = @"https://eddb.io/archive/v5/systems.csv";
             var destination = DataPath;
 
             if (recent)
@@ -129,7 +129,7 @@ namespace Trade
             var ts = new Stopwatch();
             ts.Start();
             var totalSystemCount = File.ReadLines(filename).Count();
-            Console.WriteLine($" found {totalSystemCount} systems to load...");
+            Console.WriteLine($" found {totalSystemCount:n0} systems to load...");
 
 
             IEnumerable<EDSystem> systems;
@@ -190,8 +190,13 @@ namespace Trade
 
         public IEnumerable<KeyValuePair<string, EDSystem>> FindInRange(EDSystem origin, double range)
         {
-            var systems = _MasterSystemList.Where(x => x.Value != origin && Astrogation.Distance(origin, x.Value) <= range).ToList();
-            return systems;
+            // 24980ms
+            var systems = _MasterSystemList.Where(x => x.Value != origin && Math.Abs(x.Value.x - origin.x) <= range && Math.Abs(x.Value.y - origin.y) <= range && Math.Abs(x.Value.z - origin.z) <= range).ToList();
+            return systems.Where(x => Astrogation.Distance(origin, x.Value) <= range).ToList();
+
+            // 48327ms
+            // var systems = _MasterSystemList.Where(x => x.Value != origin && Astrogation.Distance(origin, x.Value) <= range).ToList();
+            // return systems;
         }
     }
 }

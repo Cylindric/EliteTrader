@@ -1,6 +1,4 @@
-﻿using ManyConsole;
-
-namespace EliteTrader.Commands
+﻿namespace EliteTrader.Commands
 {
     class ExitCommand : ICommand
     {
