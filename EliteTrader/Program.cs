@@ -56,6 +56,10 @@ namespace EliteTrader
                     command = new RouteCommand(cmd);
                     break;
 
+                case "stats":
+                    command = new StatsCommand();
+                    break;
+
                 default:
                     Console.WriteLine("Unrecognised command.");
                     return 0;

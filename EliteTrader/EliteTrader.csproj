@@ -46,6 +46,7 @@
     <Compile Include="Commands\ExitCommand.cs" />
     <Compile Include="Commands\NullCommand.cs" />
     <Compile Include="Commands\RouteCommand.cs" />
+    <Compile Include="Commands\StatsCommand.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="ConsoleCommand.cs" />
     <Compile Include="Program.cs" />

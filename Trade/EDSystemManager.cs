@@ -7,11 +7,49 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace Trade
 {
+    public struct BoxKey
+    {
+        public int X { get; set; }
+        public int Z { get; set; }
+
+        public BoxKey(int x, int y)
+        {
+            X = x;
+            Z = y;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || !(obj is BoxKey))
+            {
+                return false;
+            }
+            else
+            {
+                return X == ((BoxKey)obj).X && Z == ((BoxKey)obj).Z;
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                int multi = 486187739;
+                hash = hash * multi + X.GetHashCode();
+                hash = hash * multi + Z.GetHashCode();
+                return hash;
+            }
+        }
+    }
+
     public sealed class EDSystemManager
     {
+        #region Singleton
         private static volatile EDSystemManager instance;
         private static object syncRoot = new object();
 
@@ -37,13 +75,28 @@ namespace Trade
                 return instance;
             }
         }
+        #endregion
 
         public string DataPath { get; set; }
         public string RecentDataPath { get; set; }
 
-        private const int IMPORT_BATCH_SIZE = 50000;
+        private const int ImportBatchSize = 50000;
+        private const int BoxSize = 2500;
 
-        private ConcurrentDictionary<string, EDSystem> _MasterSystemList = new ConcurrentDictionary<string, EDSystem>();
+        private ConcurrentDictionary<BoxKey, ConcurrentDictionary<string, EDSystem>> _BoxedList = new ConcurrentDictionary<BoxKey, ConcurrentDictionary<string, EDSystem>>();
+        private static object _boxLock = new object();
+
+        public ConcurrentDictionary<string, EDSystem> Systems {
+            get
+            {
+                var systems = new ConcurrentDictionary<string, EDSystem>();
+                foreach( var b in _BoxedList)
+                {
+                    systems.Concat(b.Value);
+                }
+                return systems;
+            }
+        }
 
         public void Update()
         {
@@ -149,50 +202,79 @@ namespace Trade
                 var timeSavingData = new TimeSpan(0);
 
 
-                foreach (var sys in systems)
+                foreach(var sys in systems)
                 {
                     var t = DateTime.Now;
 
-                    try
+                    sys.box = new BoxKey((int)sys.x / BoxSize, (int)sys.z / BoxSize);
+                    if (!_BoxedList.ContainsKey(sys.box))
                     {
-                        _MasterSystemList[sys.key] = sys;
+                        _BoxedList[sys.box] = new ConcurrentDictionary<string, EDSystem>();
                     }
-                    catch (ArgumentException)
-                    {
-                        // system already exists
-                        if (sys.updated_at > _MasterSystemList[sys.key].updated_at)
-                        {
-                            //Console.WriteLine($"Updating {sys.name} with more recent data");
-                            _MasterSystemList[sys.key] = sys;
-                        }
-                    }
+                    _BoxedList[sys.box][sys.key] = sys;
 
-                    if (i > 0 && i % IMPORT_BATCH_SIZE == 0)
+
+                    if (i > 0 && i % ImportBatchSize == 0)
                     {
                         var batchTime = DateTime.Now - batchStart;
-                        Console.WriteLine($"{i:n0} ({((float)i / totalSystemCount):P1}) {(IMPORT_BATCH_SIZE / batchTime.TotalSeconds):n0}/s ({IMPORT_BATCH_SIZE:n0} took {batchTime.TotalSeconds:n1} seconds)");
+                        Console.WriteLine($"{i:n0} ({((float)i / totalSystemCount):P1}) {(ImportBatchSize / batchTime.TotalSeconds):n0}/s ({ImportBatchSize:n0} took {batchTime.TotalSeconds:n1} seconds)");
                         batchStart = DateTime.Now;
                     }
 
                     i++;
-                }
+                };
 
                 ts.Stop();
-                 Console.WriteLine($"Loaded {i:n0} systems in {ts.Elapsed.ToString()}.");
+                Console.WriteLine($"Loaded {i:n0} systems in {ts.Elapsed.ToString()}.");
             }
 
         }
 
         public EDSystem Find(string name)
         {
-            return _MasterSystemList[name.ToLower()];
+            EDSystem ret = null;
+
+            Parallel.ForEach(_BoxedList, (b, state) =>
+            {
+                if (b.Value.ContainsKey(name.ToLower()))
+                {
+                    ret = b.Value[name.ToLower()];
+                    state.Break();
+                }
+            });
+
+            return ret;
         }
 
         public IEnumerable<KeyValuePair<string, EDSystem>> FindInRange(EDSystem origin, double range)
         {
+            var boxRange = ((int)range / BoxSize) + 1;
+
+            var boxes = new List<BoxKey>();
+            for(int x = origin.box.X - boxRange; x <= origin.box.X + boxRange; x++)
+            {
+                for (int z = origin.box.Z - boxRange; z <= origin.box.Z + boxRange; z++)
+                {
+                    boxes.Add(new BoxKey(x, z));
+                }
+            }
+
+            var systems = new ConcurrentDictionary<string, EDSystem>();
+            Parallel.ForEach(boxes, (box) =>
+            {
+                foreach (var system in _BoxedList[box].Where(x => x.Value != origin && Math.Abs(x.Value.x - origin.x) <= range && Math.Abs(x.Value.y - origin.y) <= range && Math.Abs(x.Value.z - origin.z) <= range).ToList())
+                {
+                    if (Astrogation.Distance(origin, system.Value) <= range)
+                    {
+                        systems[system.Key] = system.Value;
+                    }
+                }
+            });
+            return systems;
+
             // 24980ms
-            var systems = _MasterSystemList.Where(x => x.Value != origin && Math.Abs(x.Value.x - origin.x) <= range && Math.Abs(x.Value.y - origin.y) <= range && Math.Abs(x.Value.z - origin.z) <= range).ToList();
-            return systems.Where(x => Astrogation.Distance(origin, x.Value) <= range).ToList();
+            // var systems = _MasterSystemList.Where(x => x.Value != origin && Math.Abs(x.Value.x - origin.x) <= range && Math.Abs(x.Value.y - origin.y) <= range && Math.Abs(x.Value.z - origin.z) <= range).ToList();
+            // return systems.Where(x => Astrogation.Distance(origin, x.Value) <= range).ToList();
 
             // 48327ms
             // var systems = _MasterSystemList.Where(x => x.Value != origin && Astrogation.Distance(origin, x.Value) <= range).ToList();

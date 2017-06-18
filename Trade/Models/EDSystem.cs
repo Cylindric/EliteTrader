@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Trade;
 
 namespace EliteTrader.Models
 {
@@ -48,5 +49,7 @@ namespace EliteTrader.Models
         //public string controlling_minor_faction { get; set; }
         //public int? reserve_type_id { get; set; }
         //public string reserve_type { get; set; }
+
+        public BoxKey box { get; set; }
     }
 }

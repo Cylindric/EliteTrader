@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using Trade;
 
 namespace EliteTrader.Commands
@@ -14,6 +15,16 @@ namespace EliteTrader.Commands
 
         public RouteCommand(ConsoleCommand cmd)
         {
+            if(cmd.Arguments.Count() == 1)
+            {
+                if(cmd.Arguments.First() == "test")
+                {
+                    start = "olgrea";
+                    end = "te kaha";
+                    range = 30;
+                }
+            }
+
             foreach(var opt in cmd.NamedArguments)
             {
                 switch (opt.Key)
