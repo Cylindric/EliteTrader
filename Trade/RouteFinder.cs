@@ -106,7 +106,14 @@ namespace Trade
                         swPriority.Stop();
 
                         _frontier.Enqueue(next, priority);
-                        _cameFrom.Add(next.key, current);
+                        if (_cameFrom.ContainsKey(next.key))
+                        {
+                            _cameFrom[next.key] = current;
+                        }
+                        else
+                        {
+                            _cameFrom.Add(next.key, current);
+                        }
                     }
                 }
             }

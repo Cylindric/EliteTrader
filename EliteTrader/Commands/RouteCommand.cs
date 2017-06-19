@@ -78,7 +78,7 @@ namespace EliteTrader.Commands
             var i = 0;
             foreach (var n in route)
             {
-                Console.WriteLine($"{i:n0} {n.name}");
+                Console.WriteLine($"{n.name}");
                 i++;
             }
 

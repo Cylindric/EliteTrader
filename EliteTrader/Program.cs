@@ -9,8 +9,18 @@ namespace EliteTrader
     {
         static void Main(string[] args)
         {
-            EDSystemManager.Instance.DataPath = Path.Combine(Properties.Settings.Default.DataPath, "systems.csv");
-            EDSystemManager.Instance.RecentDataPath = Path.Combine(Properties.Settings.Default.DataPath, "systems_recently.csv");
+            var dataRoot = string.Empty;
+
+            if (Properties.Settings.Default.DataPath.StartsWith(@".\")) {
+                dataRoot = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), Properties.Settings.Default.DataPath).Replace(@"\.\", @"\");
+            }
+            else
+            {
+                dataRoot = Properties.Settings.Default.DataPath;
+            }
+
+            EDSystemManager.Instance.DataPath = Path.Combine(dataRoot, "systems.csv");
+            EDSystemManager.Instance.RecentDataPath = Path.Combine(dataRoot, "systems_recently.csv");
             EDSystemManager.Instance.Update();
 
             var retval = 0;
@@ -50,6 +60,10 @@ namespace EliteTrader
 
                 case "exit":
                     command = new ExitCommand();
+                    break;
+
+                case "find":
+                    command = new FindCommand(cmd);
                     break;
 
                 case "route":

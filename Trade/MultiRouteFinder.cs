@@ -38,13 +38,13 @@ namespace Trade
 
             final.Enqueue(nextSystem);
 
-            int activeRoutes = routes.Count();
+            int activeRoutes = routes.Where(r => r.Count() > 0).Count();
             while (activeRoutes != 0)
             {
                 if (activeRoutes == 1)
                 {
                     // There's only one route with systems left in it, so don't bother finding the closest, just spin through them.
-                    foreach (var route in routes.Where(r => r.Count() > 0))
+                    foreach (var route in routes)
                     {
                         while (route.Count() > 0)
                         {
@@ -60,7 +60,7 @@ namespace Trade
 
                     foreach (var route in routes)
                     {
-                        if (route.Peek().key == closestSystem.key)
+                        if (route.Count() > 0 && route.Peek().key == closestSystem.key)
                         {
                             route.Dequeue();
                         }
@@ -93,7 +93,7 @@ namespace Trade
             var router = new RouteFinder();
             router.JumpRange = JumpRange;
 
-            foreach (var route in routes)
+            foreach (var route in routes.Where(r => r.Count() > 0))
             {
                 var j = router.Route(current, route.Peek());
                 if (j.Count() < clostestJumps)
