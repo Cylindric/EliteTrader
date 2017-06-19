@@ -1,0 +1,13 @@
+digraph G {
+	olgrea [label="Olgrea"];
+	te_kaha [label="Te Kaha"];
+	cao_junga [label="Cao Junga"];
+	carnsan [label="Carnsan"];
+	
+	olgrea -> te_kaha [label="8"];
+	te_kaha -> cao_junga;
+	cao_junga -> carnsan;
+	carnsan -> "MCC 105";
+	"MCC 105" -> olgrea;
+	
+}

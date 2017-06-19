@@ -7,54 +7,53 @@ namespace EliteTrader.Commands
 {
     class RouteCommand : ICommand
     {
-        private RouteFinder router = new RouteFinder();
-
-        private string start { get; set; }
-        private string end { get; set; }
-        private float range { get; set; }
+        private RouteFinder _router = new RouteFinder();
+        private string _start { get; set; }
+        private string _end { get; set; }
+        private float _range { get; set; }
 
         public RouteCommand(ConsoleCommand cmd)
         {
             if(cmd.Arguments.Count() == 1)
             {
-                if(cmd.Arguments.First() == "test")
+                if(cmd.Arguments.First().Value == "test")
                 {
-                    start = "olgrea";
-                    end = "te kaha";
-                    range = 30;
+                    _start = "olgrea";
+                    _end = "te kaha";
+                    _range = 30;
                 }
             }
 
-            foreach(var opt in cmd.NamedArguments)
+            foreach(var opt in cmd.Arguments)
             {
                 switch (opt.Key)
                 {
                     case "start":
                     case "from":
-                        start = opt.Value;
+                        _start = opt.Value;
                         break;
 
                     case "end":
                     case "to":
-                        end = opt.Value;
+                        _end = opt.Value;
                         break;
 
                     case "jump":
                     case "jmp":
-                        range = (float)Convert.ToDouble(opt.Value);
+                        _range = (float)Convert.ToDouble(opt.Value);
                         break;
                 }
             }
 
-            if (string.IsNullOrEmpty(start))
+            if (string.IsNullOrEmpty(_start))
             {
                 throw new ArgumentException("Missing Start parameter!");
             }
-            if (string.IsNullOrEmpty(end))
+            if (string.IsNullOrEmpty(_end))
             {
                 throw new ArgumentException("Missing End parameter!");
             }
-            if (range ==  0)
+            if (_range ==  0)
             {
                 throw new ArgumentException("Missing range parameter!");
             }
@@ -62,13 +61,20 @@ namespace EliteTrader.Commands
 
         public int Execute()
         {
-            router.JumpRange = range;
+            var start = EDSystemManager.Instance.Find(_start);
+            var end = EDSystemManager.Instance.Find(_end);
+
+            var distance = Astrogation.Distance(start, end);
+
+            Console.WriteLine($"Looking for path between {start.name} and {end.name} ({distance:n2} Ly)...");
+
+            _router.JumpRange = _range;
             var sw = new Stopwatch();
             sw.Start();
-            var route = router.Route(start, end);
+            var route = _router.Route(start, end);
             sw.Stop();
 
-            Console.WriteLine($"Path found, {start} to {end} in {route.Count - 1} jumps. Took {sw.Elapsed.ToString()}");
+            Console.WriteLine($"Path found, {start.name} to {end.name} in {route.Count - 1} jumps. Took {sw.Elapsed.ToString()}");
             var i = 0;
             foreach (var n in route)
             {

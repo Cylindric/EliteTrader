@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace EliteTrader
 {
     public class ConsoleCommand
     {
+        public struct Arg
+        {
+            public string Key;
+            public string Value;
+        }
+
         public string Name { get; set; }
 
-        public IEnumerable<string> Arguments
+        public IEnumerable<Arg> Arguments
         {
             get
             {
@@ -19,21 +20,11 @@ namespace EliteTrader
             }
         }
 
-        public IDictionary<string, string> NamedArguments
-        {
-            get
-            {
-                return _namedArgs;
-            }
-        }
-
-        private List<string> _arguments;
-        private Dictionary<string, string> _namedArgs;
+        private List<Arg> _arguments;
 
         public ConsoleCommand(string input)
         {
-            _arguments = new List<string>();
-            _namedArgs = new Dictionary<string, string>();
+            var arguments = new List<string>();
 
             input = input.Trim();
             if (string.IsNullOrEmpty(input))
@@ -53,7 +44,7 @@ namespace EliteTrader
                 else if (inQuoted == false && c == ' ')
                 {
                     // A space usually delimits tokens, unless we're in the middle of a quoted string
-                    _arguments.Add(token);
+                    arguments.Add(token);
                     token = string.Empty;
                 }
                 else
@@ -65,20 +56,25 @@ namespace EliteTrader
             // There will probably be a trailing token, add that too.
             if (!string.IsNullOrEmpty(token))
             {
-                _arguments.Add(token);
+                arguments.Add(token);
             }
 
             // The first token is the command name.
-            Name = _arguments[0];
-            _arguments.RemoveAt(0);
+            Name = arguments[0];
+            arguments.RemoveAt(0);
 
             // See if any of the arguments are name/value pairs, and if so store them in the NamedArgs.
-            foreach(var arg in _arguments)
+            _arguments = new List<Arg>();
+            foreach(var arg in arguments)
             {
                 if (arg.Contains("="))
                 {
                     var parts = arg.Split('=');
-                    _namedArgs.Add(parts[0], parts[1]);
+                    _arguments.Add(new Arg() { Key = parts[0], Value = parts[1] });
+                }
+                else
+                {
+                    _arguments.Add(new Arg() { Value = arg });
                 }
             }
         }

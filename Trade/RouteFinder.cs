@@ -10,15 +10,12 @@ namespace Trade
     {
         public float JumpRange { get; set; }
 
-        private EDSystem _start { get; set; }
-        private EDSystem _end { get; set; }
-
         private SimplePriorityQueue<EDSystem> _frontier;
         private Dictionary<string, EDSystem> _cameFrom;
         private Dictionary<string, float> _costSoFar;
 
 
-        public List<EDSystem> Route(string fromSystem, string toSystem)
+        public List<EDSystem> Route(EDSystem start, EDSystem end)
         {
             var swTotal = new System.Diagnostics.Stopwatch();
             var swSort = new System.Diagnostics.Stopwatch();
@@ -27,27 +24,19 @@ namespace Trade
             swTotal.Start();
 
             var edsm = EDSystemManager.Instance;
-            _start = edsm.Find(fromSystem);
-            _end = edsm.Find(toSystem);
-
-
-            var distance = Astrogation.Distance(_start, _end);
-
-            Console.WriteLine($"Looking for path between {_start.name} and {_end.name} ({distance:n2} Ly)...");
 
             _frontier = new SimplePriorityQueue<EDSystem>();
             _cameFrom = new Dictionary<string, EDSystem>();
             _costSoFar = new Dictionary<string, float>();
 
-            _frontier.Enqueue(_start, 0);
-            _costSoFar.Add(_start.key, 0);
-
+            _frontier.Enqueue(start, 0);
+            _costSoFar.Add(start.key, 0);
 
             while (_frontier.Count > 0)
             {
                 var current = _frontier.Dequeue();
 
-                if (current == _end) {
+                if (current == end) {
                     break;
                 }
 
@@ -57,7 +46,7 @@ namespace Trade
 
                 // sort neighbours to put those closest to the target first
                 swSort.Start();
-                neighbours.OrderBy(x => Astrogation.Distance(x.Value, _end));
+                neighbours.OrderBy(x => Astrogation.Distance(x.Value, end));
                 swSort.Stop();
 
                 foreach(var kvNext in neighbours)
@@ -78,7 +67,7 @@ namespace Trade
                         }
 
                         swPriority.Start();
-                        var priority = new_cost + Astrogation.Distance(next, _end); //Astrogation.ManhattanDistance(_end, next);
+                        var priority = new_cost + Astrogation.Distance(next, end); //Astrogation.ManhattanDistance(_end, next);
                         swPriority.Stop();
 
                         _frontier.Enqueue(next, priority);
@@ -88,18 +77,17 @@ namespace Trade
             }
 
             var path = new List<EDSystem>();
-            var c = _end;
-            while (c != _start)
+            var c = end;
+            while (c != start)
             {
                 path.Add(c);
                 c = _cameFrom[c.key];
             }
-            path.Add(_start);
+            path.Add(start);
             path.Reverse();
 
             swTotal.Stop();
             Console.WriteLine($"total:{swTotal.ElapsedMilliseconds}, sort:{swSort.ElapsedMilliseconds}, priority:{swPriority.ElapsedMilliseconds}, neigh:{swNeighbours.ElapsedMilliseconds}");
-            // Console.WriteLine($"total:{swTotal.ElapsedTicks}, sort:{swSort.ElapsedTicks}, priority:{swPriority.ElapsedTicks}, neigh:{swNeighbours.ElapsedTicks}");
 
             return path; 
         }

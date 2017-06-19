@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\ExitCommand.cs" />
+    <Compile Include="Commands\MultiRouteCommand.cs" />
     <Compile Include="Commands\NullCommand.cs" />
     <Compile Include="Commands\RouteCommand.cs" />
     <Compile Include="Commands\StatsCommand.cs" />

@@ -56,6 +56,10 @@ namespace EliteTrader
                     command = new RouteCommand(cmd);
                     break;
 
+                case "multiroute":
+                    command = new MultiRouteCommand(cmd);
+                    break;
+
                 case "stats":
                     command = new StatsCommand();
                     break;

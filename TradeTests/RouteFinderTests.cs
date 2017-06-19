@@ -25,7 +25,7 @@ namespace Trade.Tests
 
             var j = new RouteFinder();
             j.JumpRange = 30.0F;
-            var route = j.Route("Olgrea", "Te Kaha");
+            var route = j.Route(EDSystemManager.Instance.Find("Olgrea"), EDSystemManager.Instance.Find("Te Kaha"));
 
             Console.WriteLine($"Path found, Olgrea to Te Kaha in {route.Count - 1} jumps.");
             var i = 0;
