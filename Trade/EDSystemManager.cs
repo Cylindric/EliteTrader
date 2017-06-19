@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Trade
 {
+    [DebuggerDisplay("{X},{Y}")]
     public struct BoxKey
     {
         public int X { get; set; }
@@ -90,15 +91,18 @@ namespace Trade
             get
             {
                 var systems = new ConcurrentDictionary<string, EDSystem>();
-                foreach( var b in _BoxedList)
+                foreach(var b in _BoxedList)
                 {
-                    systems.Concat(b.Value);
+                    foreach(var s in b.Value)
+                    {
+                        systems[s.Key] = s.Value;
+                    }
                 }
                 return systems;
             }
         }
 
-        public void Update()
+        public void Update(bool includeLatest = true)
         {
             DateTime lastUpdate = DateTime.MinValue;
 
@@ -121,9 +125,12 @@ namespace Trade
             var dataLastUpdated = File.GetLastWriteTime(DataPath);
 
             // Download latest delta
-            if (dataLastUpdated < DateTime.Now.AddMinutes(-10) && (!File.Exists(RecentDataPath) || File.GetLastWriteTime(RecentDataPath) < DateTime.Now.AddMinutes(-10)))
+            if (includeLatest)
             {
-                DownloadData(true);
+                if (dataLastUpdated < DateTime.Now.AddMinutes(-10) && (!File.Exists(RecentDataPath) || File.GetLastWriteTime(RecentDataPath) < DateTime.Now.AddMinutes(-10)))
+                {
+                    DownloadData(true);
+                }
             }
 
             // Load the data into memory
@@ -255,7 +262,9 @@ namespace Trade
             {
                 for (int z = origin.box.Z - boxRange; z <= origin.box.Z + boxRange; z++)
                 {
-                    boxes.Add(new BoxKey(x, z));
+                    var key = new BoxKey(x, z);
+                    if (_BoxedList.ContainsKey(key))
+                    boxes.Add(key);
                 }
             }
 

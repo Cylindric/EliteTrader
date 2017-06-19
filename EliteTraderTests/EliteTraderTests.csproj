@@ -67,6 +67,10 @@
       <Project>{9DB2369A-EE71-4E40-8C86-3E925D2F11A8}</Project>
       <Name>EliteTrader</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Trade\Trade.csproj">
+      <Project>{6B3692CE-6908-4292-8844-D00CAB9ED742}</Project>
+      <Name>Trade</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

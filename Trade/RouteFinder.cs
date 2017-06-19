@@ -1,6 +1,5 @@
 ﻿using EliteTrader.Models;
 using Priority_Queue;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,15 +7,51 @@ namespace Trade
 {
     public class RouteFinder
     {
-        public float JumpRange { get; set; }
+        private struct CacheKey {
+            public string Start { get; set; }
+            public string End { get; set; }
+        }
+
+        public bool LastResultWasFromCache { get; set; }
+
+        private float _jumpRange;
+        public float JumpRange
+        {
+            get
+            {
+                return _jumpRange;
+            }
+            set
+            {
+                _jumpRange = value;
+                _routeCache = new Dictionary<CacheKey, List<EDSystem>>();
+            }
+        }
 
         private SimplePriorityQueue<EDSystem> _frontier;
         private Dictionary<string, EDSystem> _cameFrom;
         private Dictionary<string, float> _costSoFar;
-
+        private Dictionary<CacheKey, List<EDSystem>> _routeCache = new Dictionary<CacheKey, List<EDSystem>>();
 
         public List<EDSystem> Route(EDSystem start, EDSystem end)
         {
+            if(JumpRange == 0)
+            {
+                throw new System.InvalidOperationException("Jump range has not been set.");
+            }
+
+            var key = new CacheKey() { Start = start.key, End = end.key };
+            if (_routeCache.ContainsKey(key))
+            {
+                LastResultWasFromCache = true;
+                return _routeCache[key];
+            }
+            else
+            {
+                LastResultWasFromCache = false;
+            }
+
+
             var swTotal = new System.Diagnostics.Stopwatch();
             var swSort = new System.Diagnostics.Stopwatch();
             var swPriority = new System.Diagnostics.Stopwatch();
@@ -86,8 +121,10 @@ namespace Trade
             path.Add(start);
             path.Reverse();
 
+            _routeCache.Add(key, path);
+
             swTotal.Stop();
-            Console.WriteLine($"total:{swTotal.ElapsedMilliseconds}, sort:{swSort.ElapsedMilliseconds}, priority:{swPriority.ElapsedMilliseconds}, neigh:{swNeighbours.ElapsedMilliseconds}");
+            // Console.WriteLine($"total:{swTotal.ElapsedMilliseconds}, sort:{swSort.ElapsedMilliseconds}, priority:{swPriority.ElapsedMilliseconds}, neigh:{swNeighbours.ElapsedMilliseconds}");
 
             return path; 
         }

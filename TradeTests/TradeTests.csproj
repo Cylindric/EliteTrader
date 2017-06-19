@@ -57,7 +57,9 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AstrogationTests.cs" />
+    <Compile Include="EDSystemManagerTests.cs" />
     <Compile Include="Models\EDSystemTests.cs" />
+    <Compile Include="MultiRouteFinderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteFinderTests.cs" />
   </ItemGroup>
