@@ -52,7 +52,7 @@ namespace EliteTrader.Commands
             Console.WriteLine($"Looking for systems within {_distance:n1} Ly of {start.name}...");
             var systems = EDSystemManager.Instance.FindInRange(start, _distance);
             Console.WriteLine($"Found {systems.Count()} systems:");
-            foreach(var sys in systems)
+            foreach(var sys in systems.OrderBy(s => s.Value.name))
             {
                 Console.WriteLine($"{sys.Value.name}");
             }

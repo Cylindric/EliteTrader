@@ -33,40 +33,18 @@ namespace Trade.Tests
             var j = new RouteFinder();
             j.JumpRange = 30.0F;
             var route = j.Route(EDSystemManager.Instance.Find("Olgrea"), EDSystemManager.Instance.Find("Te Kaha"));
+            Assert.AreEqual(8, route.Count());
+        }
 
-            Console.WriteLine($"Path found, Olgrea to Te Kaha in {route.Count - 1} jumps.");
-            var i = 0;
-            foreach (var n in route)
-            {
-                Console.WriteLine($"{i:n0} {n.name}");
-                i++;
-            }
-
-            /*
-             * Route from http://www.miggy.org/games/elite-dangerous/routes/:
-             * 
-                0	Olgrea	                        0.00	0.00	0.00
-                1	Bei Dou Sector FW-W b1-2 (M)	23.42	23.42	23.42
-                2	Tirada (M)	                    29.38	52.81	47.96
-                3	Liabefa (M)	                    29.46	82.26	75.56
-                4	HIP 13179	                    29.06	111.32	104.11
-                5	Lyncis Sector XP-P b5-6 (M)	    27.89	139.21	130.61
-                6	Col 285 Sector ES-H b11-3 (M)	28.51	167.72	158.46
-                7	Col 285 Sector NY-Q c5-18 (K)	29.60	197.33	185.55
-                8	Te Kaha (M)	                    29.84	227.17	214.32
-
-            * Route from here:
-                0 Olgrea
-                1 LP 63-267
-                2 Tirada
-                3 Liabefa
-                4 HIP 13179
-                5 Lyncis Sector XP-P b5-6
-                6 Col 285 Sector ES-H b11-3
-                7 Col 285 Sector NY-Q c5-18
-                8 Te Kah
-*/
-            Assert.AreEqual(9, route.Count());
+        [TestMethod()]
+        public void RouteTestNoSystemsInRange()
+        {
+            // You can't get from Olgrea to Sheela Na Gig with 5LY jumps, it is 6.597303LY
+            DataSetup();
+            var j = new RouteFinder();
+            j.JumpRange = 5;
+            var route = j.Route(EDSystemManager.Instance.Find("Olgrea"), EDSystemManager.Instance.Find("Sheela Na Gig"));
+            Assert.AreEqual(0, route.Count());
         }
 
         [TestMethod()]
@@ -76,7 +54,7 @@ namespace Trade.Tests
             var j = new RouteFinder();
             j.JumpRange = 30.0F;
             var route = j.Route(EDSystemManager.Instance.Find("HIP 41181"), EDSystemManager.Instance.Find("Vamm"));
-            Assert.AreEqual(7, route.Count());
+            Assert.AreEqual(6, route.Count());
         }
 
         [TestMethod]
@@ -85,25 +63,25 @@ namespace Trade.Tests
             var sw = new Stopwatch();
 
             DataSetup();
+            RouteFinder.ClearCache();
+
             var rf1 = new RouteFinder();
             rf1.JumpRange = 30.0F;
-
             sw.Start();
             rf1.Route(EDSystemManager.Instance.Find("Tocorii"), EDSystemManager.Instance.Find("Te Kaha"));
             sw.Stop();
             var uncachedTime = sw.ElapsedTicks;
-
             Assert.AreEqual(false, rf1.LastResultWasFromCache);
 
-            //var rf2 = new RouteFinder();
-            //rf2.JumpRange = 30.0F;
-            //sw.Reset();
-            //sw.Start();
-            //rf2.Route(EDSystemManager.Instance.Find("Tocorii"), EDSystemManager.Instance.Find("Te Kaha"));
-            //sw.Stop();
-            //var cachedTime = sw.ElapsedTicks;
+            var rf2 = new RouteFinder();
+            rf2.JumpRange = 30.0F;
+            sw.Reset();
+            sw.Start();
+            rf2.Route(EDSystemManager.Instance.Find("Tocorii"), EDSystemManager.Instance.Find("Te Kaha"));
+            sw.Stop();
+            var cachedTime = sw.ElapsedTicks;
 
-            //Assert.AreEqual(true, rf2.LastResultWasFromCache);
+            Assert.AreEqual(true, rf2.LastResultWasFromCache);
         }
 
         [TestMethod]
@@ -112,14 +90,14 @@ namespace Trade.Tests
             var sw = new Stopwatch();
 
             DataSetup();
+            RouteFinder.ClearCache();
+
             var rf1 = new RouteFinder();
             rf1.JumpRange = 30.0F;
-
             sw.Start();
             rf1.Route(EDSystemManager.Instance.Find("HIP 41181"), EDSystemManager.Instance.Find("Vamm"));
             sw.Stop();
             var uncachedTime = sw.ElapsedTicks;
-
             Assert.AreEqual(false, rf1.LastResultWasFromCache);
 
             var rf2 = new RouteFinder();

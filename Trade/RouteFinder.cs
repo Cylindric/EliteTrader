@@ -18,7 +18,16 @@ namespace Trade
             public string End { get; set; }
         }
 
-        public bool LastResultWasFromCache { get; set; }
+        [DebuggerDisplay("{System} ({Distance}LY)")]
+        private struct RouteNode
+        {
+            public EDSystem System { get; set; }
+            public float Distance { get; set; }
+            internal float Priority { get; set; }
+        }
+
+        public bool LastResultWasFromCache { get; set; } = false;
+        public bool AcceptPartialRoutes { get; set; } = false;
 
         private float _jumpRange;
         public float JumpRange
@@ -34,10 +43,15 @@ namespace Trade
         }
 
         private SimplePriorityQueue<EDSystem> _frontier;
-        private Dictionary<string, EDSystem> _cameFrom;
-        private Dictionary<string, float> _costSoFar;
+        private Dictionary<string, RouteNode> _cameFrom;
+        private Dictionary<string, RouteNode> _costSoFar;
 
         private static Dictionary<CacheKey, List<EDSystem>> _routeCache = new Dictionary<CacheKey, List<EDSystem>>();
+
+        public static void ClearCache()
+        {
+            _routeCache = new Dictionary<CacheKey, List<EDSystem>>();
+        }
 
         public List<EDSystem> Route(EDSystem start, EDSystem end)
         {
@@ -68,17 +82,20 @@ namespace Trade
             var edsm = EDSystemManager.Instance;
 
             _frontier = new SimplePriorityQueue<EDSystem>();
-            _cameFrom = new Dictionary<string, EDSystem>();
-            _costSoFar = new Dictionary<string, float>();
+            _cameFrom = new Dictionary<string, RouteNode>();
+            _costSoFar = new Dictionary<string, RouteNode>();
 
             _frontier.Enqueue(start, 0);
-            _costSoFar.Add(start.key, 0);
+            _costSoFar.Add(start.key, new RouteNode() { System = start, Distance = 0, Priority = 0 });
+
+            var routeFound = false;
 
             while (_frontier.Count > 0)
             {
                 var current = _frontier.Dequeue();
 
                 if (current == end) {
+                    routeFound = true;
                     break;
                 }
 
@@ -95,18 +112,21 @@ namespace Trade
                 {
                     var next = kvNext.Value;
 
-                    var new_cost = _costSoFar[current.key] + 1;
+                    var new_cost = _costSoFar[current.key].Priority + 1;
                     
-                    if (_costSoFar.ContainsKey(next.key) == false || new_cost < _costSoFar[next.key])
+                    if (_costSoFar.ContainsKey(next.key) == false || new_cost < _costSoFar[next.key].Priority)
                     {
                         if (_costSoFar.ContainsKey(next.key))
                         {
-                            _costSoFar[next.key] = new_cost;
+                            var cost = _costSoFar[next.key];
+                            cost.Priority = new_cost;
                         }
                         else
                         {
-                            _costSoFar.Add(next.key, new_cost);
+                            _costSoFar.Add(next.key, new RouteNode() { System = next, Priority = new_cost });
                         }
+
+                        var node = new RouteNode() { System = current, Distance = Astrogation.Distance(current, next) };
 
                         swPriority.Start();
                         var priority = new_cost + Astrogation.Distance(next, end);
@@ -114,16 +134,7 @@ namespace Trade
 
                         _frontier.Enqueue(next, priority);
 
-                        // TODO: Not sure why this check needs to be added. The A* implementations 
-                        // I've seen always seem to assume the CameFrom list would not already contain the node.
-                        //if (_cameFrom.ContainsKey(next.key))
-                        //{
-                            _cameFrom[next.key] = current;
-                        //}
-                        //else
-                        //{
-                        //    _cameFrom.Add(next.key, current);
-                        //}
+                        _cameFrom[next.key] = node;
                     }
                 }
             }
@@ -131,14 +142,21 @@ namespace Trade
             DumpSearchSpaceGraph(start, end, _cameFrom, _costSoFar);
 
             var path = new List<EDSystem>();
-            var c = end;
-            while (c != start)
+            if (routeFound || AcceptPartialRoutes)
             {
-                path.Add(c);
-                c = _cameFrom[c.key];
+                var c = end;
+                while (c != start)
+                {
+                    path.Add(c);
+                    if (_cameFrom.ContainsKey(c.key) == false)
+                    {
+                        // This should only happen if there is no route to the requested destination.
+                        break;
+                    }
+                    c = _cameFrom[c.key].System;
+                }
+                path.Reverse();
             }
-            path.Add(start);
-            path.Reverse();
 
             _routeCache.Add(key, path);
 
@@ -148,7 +166,7 @@ namespace Trade
             return path; 
         }
 
-        private void DumpSearchSpaceGraph(EDSystem start, EDSystem end, Dictionary<string, EDSystem> cameFromList, Dictionary<string, float> costSoFarList)
+        private void DumpSearchSpaceGraph(EDSystem start, EDSystem end, Dictionary<string, RouteNode> cameFromList, Dictionary<string, RouteNode> costSoFarList)
         {
             var g = new StringBuilder();
 
@@ -172,7 +190,7 @@ namespace Trade
                     colour = "style=filled,fillcolor=\"red\"";
                 }
 
-                g.Append($"{ToDotSafeValue(system)} [label=\"{system}\",");
+                g.Append($"{ToDotSafeValue(system)} [label=\"{costSoFarList[system].System.name}\",");
                 g.Append(style);
                 g.Append(shape);
                 g.Append(colour);
@@ -186,17 +204,22 @@ namespace Trade
 
             foreach (var system in cameFromList)
             {
-                g.Append($"{ToDotSafeValue(system.Value.key)} -> {ToDotSafeValue(system.Key)}");
+                g.Append($"{ToDotSafeValue(system.Value.System.key)} -> {ToDotSafeValue(system.Key)}");
                 if (costSoFarList.ContainsKey(system.Key))
                 {
-                    g.Append($" [label=\"{costSoFarList[system.Key]:n0}\"]");
+                    g.Append($" [label=\"{system.Value.Distance:n0}LY\"]");
                 }
                 g.AppendLine(";");
             }
 
             g.AppendLine("}");
 
-            File.WriteAllText(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "graphs", "camefrom.dv"), g.ToString());
+            var graphPath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "graphs");
+            if (!Directory.Exists(graphPath))
+            {
+                Directory.CreateDirectory(graphPath);
+            }
+            File.WriteAllText(Path.Combine(graphPath, $"{start.key} to {end.key}.dv"), g.ToString());
         }
 
         private string ToDotSafeValue(string input)
