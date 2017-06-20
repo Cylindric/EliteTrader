@@ -95,10 +95,10 @@ namespace Trade.Tests
             var routeC = new Queue<EDSystem>();
             routeC.Enqueue(EDSystemManager.Instance.Find("lugh"));
             routeC.Enqueue(EDSystemManager.Instance.Find("brohman"));
-            routes.Add(routeB);
+            routes.Add(routeC);
 
             var finalRoute = mr.Route(start, routes);
-            Assert.AreEqual(6, finalRoute.Count());
+            Assert.AreEqual(9, finalRoute.Count());
 
             int i = 0;
             EDSystem prev = null;

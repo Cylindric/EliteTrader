@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Astrogation.cs" />
+    <Compile Include="BoxKey.cs" />
     <Compile Include="EDSystemManager.cs" />
     <Compile Include="Maps\EDSystemMap.cs" />
     <Compile Include="MultiRouteFinder.cs" />

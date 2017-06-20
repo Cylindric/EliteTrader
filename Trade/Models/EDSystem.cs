@@ -6,6 +6,8 @@ namespace EliteTrader.Models
     [DebuggerDisplay("{name}")]
     public class EDSystem
     {
+        internal static int BoxSize { get; set; }
+
         public int? id { get; set; }
         //public int? edsm_id { get; set; }
         public string key { get; private set; }
@@ -50,6 +52,12 @@ namespace EliteTrader.Models
         //public int? reserve_type_id { get; set; }
         //public string reserve_type { get; set; }
 
-        public BoxKey box { get; set; }
+        public BoxKey box
+        {
+            get
+            {
+                return new BoxKey((int)x / BoxSize, (int)z / BoxSize);
+            }
+        }
     }
 }

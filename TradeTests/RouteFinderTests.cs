@@ -69,31 +69,68 @@ namespace Trade.Tests
             Assert.AreEqual(9, route.Count());
         }
 
+        [TestMethod()]
+        public void RouteTest2()
+        {
+            DataSetup();
+            var j = new RouteFinder();
+            j.JumpRange = 30.0F;
+            var route = j.Route(EDSystemManager.Instance.Find("HIP 41181"), EDSystemManager.Instance.Find("Vamm"));
+            Assert.AreEqual(7, route.Count());
+        }
+
         [TestMethod]
         public void RouteCacheTest()
         {
             var sw = new Stopwatch();
 
             DataSetup();
-            var j = new RouteFinder();
-            j.JumpRange = 30.0F;
+            var rf1 = new RouteFinder();
+            rf1.JumpRange = 30.0F;
 
             sw.Start();
-            j.Route(EDSystemManager.Instance.Find("Olgrea"), EDSystemManager.Instance.Find("Te Kaha"));
+            rf1.Route(EDSystemManager.Instance.Find("Tocorii"), EDSystemManager.Instance.Find("Te Kaha"));
             sw.Stop();
             var uncachedTime = sw.ElapsedTicks;
 
-            Assert.AreEqual(false, j.LastResultWasFromCache);
+            Assert.AreEqual(false, rf1.LastResultWasFromCache);
 
+            //var rf2 = new RouteFinder();
+            //rf2.JumpRange = 30.0F;
+            //sw.Reset();
+            //sw.Start();
+            //rf2.Route(EDSystemManager.Instance.Find("Tocorii"), EDSystemManager.Instance.Find("Te Kaha"));
+            //sw.Stop();
+            //var cachedTime = sw.ElapsedTicks;
+
+            //Assert.AreEqual(true, rf2.LastResultWasFromCache);
+        }
+
+        [TestMethod]
+        public void RouteCacheTestDifferentRanges()
+        {
+            var sw = new Stopwatch();
+
+            DataSetup();
+            var rf1 = new RouteFinder();
+            rf1.JumpRange = 30.0F;
+
+            sw.Start();
+            rf1.Route(EDSystemManager.Instance.Find("HIP 41181"), EDSystemManager.Instance.Find("Vamm"));
+            sw.Stop();
+            var uncachedTime = sw.ElapsedTicks;
+
+            Assert.AreEqual(false, rf1.LastResultWasFromCache);
+
+            var rf2 = new RouteFinder();
+            rf2.JumpRange = 40F;
             sw.Reset();
             sw.Start();
-            j.Route(EDSystemManager.Instance.Find("Olgrea"), EDSystemManager.Instance.Find("Te Kaha"));
+            rf2.Route(EDSystemManager.Instance.Find("HIP 41181"), EDSystemManager.Instance.Find("Vamm"));
             sw.Stop();
             var cachedTime = sw.ElapsedTicks;
 
-            Assert.AreEqual(true, j.LastResultWasFromCache);
-
-            Assert.IsTrue(cachedTime / uncachedTime <= 0.005, "Cached route should be much faster than an uncached route.");
+            Assert.AreEqual(false, rf2.LastResultWasFromCache);
         }
     }
 }

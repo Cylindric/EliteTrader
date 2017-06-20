@@ -11,42 +11,6 @@ using System.Threading.Tasks;
 
 namespace Trade
 {
-    [DebuggerDisplay("{X},{Y}")]
-    public struct BoxKey
-    {
-        public int X { get; set; }
-        public int Z { get; set; }
-
-        public BoxKey(int x, int y)
-        {
-            X = x;
-            Z = y;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null || !(obj is BoxKey))
-            {
-                return false;
-            }
-            else
-            {
-                return X == ((BoxKey)obj).X && Z == ((BoxKey)obj).Z;
-            }
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hash = 17;
-                int multi = 486187739;
-                hash = hash * multi + X.GetHashCode();
-                hash = hash * multi + Z.GetHashCode();
-                return hash;
-            }
-        }
-    }
 
     public sealed class EDSystemManager
     {
@@ -57,6 +21,7 @@ namespace Trade
         private EDSystemManager() {
             DataPath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "systems.csv");
             RecentDataPath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "systems_recently.csv");
+            EDSystem.BoxSize = BoxSize;
         }
 
         public static EDSystemManager Instance
@@ -82,7 +47,7 @@ namespace Trade
         public string RecentDataPath { get; set; }
 
         private const int ImportBatchSize = 50000;
-        private const int BoxSize = 2500;
+        public static int BoxSize = 2500;
 
         private ConcurrentDictionary<BoxKey, ConcurrentDictionary<string, EDSystem>> _BoxedList = new ConcurrentDictionary<BoxKey, ConcurrentDictionary<string, EDSystem>>();
         private static object _boxLock = new object();
@@ -213,7 +178,6 @@ namespace Trade
                 {
                     var t = DateTime.Now;
 
-                    sys.box = new BoxKey((int)sys.x / BoxSize, (int)sys.z / BoxSize);
                     if (!_BoxedList.ContainsKey(sys.box))
                     {
                         _BoxedList[sys.box] = new ConcurrentDictionary<string, EDSystem>();
@@ -237,6 +201,11 @@ namespace Trade
 
         }
 
+        /// <summary>
+        /// Find the system with the specified name.
+        /// </summary>
+        /// <param name="name">The name of the system to search for.</param>
+        /// <returns>The matching system, or null if none found.</returns>
         public EDSystem Find(string name)
         {
             EDSystem ret = null;
@@ -253,10 +222,24 @@ namespace Trade
             return ret;
         }
 
+
+        /// <summary>
+        /// Find all Systems within range of the specified system.
+        /// </summary>
+        /// <param name="origin">The reference system.</param>
+        /// <param name="range">The range to include.</param>
+        /// <returns>A list of all Systems that are within range of the origin.</returns>
         public IEnumerable<KeyValuePair<string, EDSystem>> FindInRange(EDSystem origin, double range)
         {
+            // We only need to consider systems within the same box as the origin, and neighbouring boxes up to the jump range away.
+            // One possible optimisation here is to calculate the boxes within the spherical range, but I suspect that for all but the
+            // longest routes, the constant circle-maths would cost more than it gains. Something to try out sometime.
+
+            // Find out how many boxes away from the origin we need to inspect.
             var boxRange = ((int)range / BoxSize) + 1;
 
+            // Build up a list of boxes that might contain reachable systems. These are the boxes we'll be searching later, so the smaller
+            // we can make this list the better, and the fewer the number of systems in the boxes the better too.
             var boxes = new List<BoxKey>();
             for(int x = origin.box.X - boxRange; x <= origin.box.X + boxRange; x++)
             {
@@ -264,30 +247,31 @@ namespace Trade
                 {
                     var key = new BoxKey(x, z);
                     if (_BoxedList.ContainsKey(key))
-                    boxes.Add(key);
+                    {
+                        boxes.Add(key);
+                    }
                 }
             }
 
+            // Spin through every box in our search-space, and add any systems that are actually within range to the result list.
+            // This can be done concurrently, because each system is independent.
             var systems = new ConcurrentDictionary<string, EDSystem>();
             Parallel.ForEach(boxes, (box) =>
             {
+                // We're doing a faster box-based range check first, so we don't have to do an expensive √((x2-x1)² + (y2-y1)² + (z2-z1)²) calculation.
                 foreach (var system in _BoxedList[box].Where(x => x.Value != origin && Math.Abs(x.Value.x - origin.x) <= range && Math.Abs(x.Value.y - origin.y) <= range && Math.Abs(x.Value.z - origin.z) <= range).ToList())
                 {
+                    // Now we have a list of systems that have their X/Y/Z coordinates all within ±jump of the origin, find out which really are in range.
+                    // (Because the corners of the cube will be further from the centre than 1 jump-range)
                     if (Astrogation.Distance(origin, system.Value) <= range)
                     {
                         systems[system.Key] = system.Value;
                     }
                 }
             });
+
+            // We now should have a simple list of Systems within the specified range of the provided origin system.
             return systems;
-
-            // 24980ms
-            // var systems = _MasterSystemList.Where(x => x.Value != origin && Math.Abs(x.Value.x - origin.x) <= range && Math.Abs(x.Value.y - origin.y) <= range && Math.Abs(x.Value.z - origin.z) <= range).ToList();
-            // return systems.Where(x => Astrogation.Distance(origin, x.Value) <= range).ToList();
-
-            // 48327ms
-            // var systems = _MasterSystemList.Where(x => x.Value != origin && Astrogation.Distance(origin, x.Value) <= range).ToList();
-            // return systems;
         }
     }
 }

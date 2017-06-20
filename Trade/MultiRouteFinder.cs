@@ -39,12 +39,12 @@ namespace Trade
             final.Enqueue(nextSystem);
 
             int activeRoutes = routes.Where(r => r.Count() > 0).Count();
-            while (activeRoutes != 0)
+            while (activeRoutes > 0)
             {
                 if (activeRoutes == 1)
                 {
                     // There's only one route with systems left in it, so don't bother finding the closest, just spin through them.
-                    foreach (var route in routes)
+                    foreach (var route in routes.Where(r => r.Count() > 0))
                     {
                         while (route.Count() > 0)
                         {
@@ -63,14 +63,15 @@ namespace Trade
                         if (route.Count() > 0 && route.Peek().key == closestSystem.key)
                         {
                             route.Dequeue();
-                        }
 
-                        // If this route is now empty, decrease the number of active routes.
-                        if (route.Count() == 0)
-                        {
-                            activeRoutes--;
-                        }
-                    }
+                            // If this route is now empty, decrease the number of active routes.
+                            if (route.Count() == 0)
+                            {
+                                activeRoutes--;
+                            }
+                       }
+
+                     }
 
                     nextSystem = closestSystem;
                     final.Enqueue(closestSystem);
@@ -79,7 +80,7 @@ namespace Trade
             }
 
             // Do we want to return to the start? Probably I guess, for Passengers
-            // TODO: Add config option for "return to start"
+            // TODO: Add config option for "return to start?"
             final.Enqueue(start);
 
             return final;
