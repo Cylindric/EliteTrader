@@ -28,6 +28,7 @@ namespace Trade
 
         public bool LastResultWasFromCache { get; set; } = false;
         public bool AcceptPartialRoutes { get; set; } = false;
+        public bool DebugDumpRouteGraphs { get; set; } = false;
 
         private float _jumpRange;
         public float JumpRange
@@ -139,7 +140,7 @@ namespace Trade
                 }
             }
 
-            DumpSearchSpaceGraph(start, end, _cameFrom, _costSoFar);
+            if(DebugDumpRouteGraphs) DumpSearchSpaceGraph(start, end, _cameFrom, _costSoFar);
 
             var path = new List<EDSystem>();
             if (routeFound || AcceptPartialRoutes)
